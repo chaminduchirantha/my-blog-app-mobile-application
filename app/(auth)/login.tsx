@@ -8,15 +8,24 @@ import {
   Platform, 
   ScrollView, 
   StatusBar, 
-  Alert 
+  Alert,
+  useColorScheme 
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+
+
 
 export default function LoginScreen() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const systemTheme = useColorScheme();
+  const [theme, setTheme] = useState(systemTheme || "light");
+
+  const isDark = theme === "dark";
+
 
   const handleLogin = () => {
     if (!email || !password) {
@@ -26,10 +35,14 @@ export default function LoginScreen() {
     console.log("Logging in with:", email, password);
   };
 
-  return (
-    <SafeAreaView className="flex-1 bg-slate-100">
-      <StatusBar barStyle="dark-content" />
+  const handleGoogleSignIn = () => {
+    console.log("Google Sign In Clicked");
+  };
 
+
+  return (
+    <SafeAreaView className={`flex-1 ${isDark ? "bg-slate-900" : "bg-slate-100"}`}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
       <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"} 
         className="flex-1"
@@ -39,8 +52,19 @@ export default function LoginScreen() {
           showsVerticalScrollIndicator={false} 
           keyboardShouldPersistTaps="handled"
         >
-          
           <View className="px-6 pt-10 pb-8 items-center">
+            <TouchableOpacity
+              onPress={() => setTheme(isDark ? "light" : "dark")}
+              className="absolute right-6 top-6"
+            >
+              <Ionicons
+                name={isDark ? "sunny" : "moon"}
+                size={26}
+                color={isDark ? "#99a1af" : "#99a1af"}
+                style={{ opacity: 0.85 }}
+              />
+            </TouchableOpacity>
+
             <View className="w-16 h-16 rounded-2xl bg-teal-600 items-center justify-center mb-5 shadow-lg shadow-teal-600/50">
               <Text className="text-3xl text-white">✍️</Text>
             </View>
@@ -53,8 +77,7 @@ export default function LoginScreen() {
             </Text>
           </View>
 
-          <View className="flex-1 bg-white rounded-[20px] m-5 px-4 pt-10 shadow-2xl shadow-black">
-            
+          <View className={`flex-1 rounded-[20px] m-5 px-4 pt-10 shadow-2xl ${isDark ? "bg-slate-800" : "bg-white"}`}>
             <View className="mb-5">
               <Text className="text-xs font-bold text-slate-600 mb-2 ml-1 tracking-widest">
                 EMAIL ADDRESS
@@ -66,7 +89,11 @@ export default function LoginScreen() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 placeholderTextColor="#94a3b8"
-                className="bg-slate-50 rounded-2xl border border-slate-200 p-4 text-slate-900 text-base"
+                className={`rounded-2xl border p-4 text-base ${
+                  isDark
+                    ? "bg-slate-700 border-slate-600 text-white"
+                    : "bg-slate-50 border-slate-200 text-slate-900"
+                }`}
               />
             </View>
 
@@ -82,7 +109,11 @@ export default function LoginScreen() {
                 onChangeText={setPassword}
                 secureTextEntry
                 placeholderTextColor="#94a3b8"
-                className="bg-slate-50 rounded-2xl border border-slate-200 p-4 text-slate-900 text-base"
+                className={`rounded-2xl border p-4 text-base ${
+                  isDark
+                    ? "bg-slate-700 border-slate-600 text-white"
+                    : "bg-slate-50 border-slate-200 text-slate-900"
+                }`}
               />
             </View>
 
@@ -100,12 +131,31 @@ export default function LoginScreen() {
               <View className="flex-1 h-[1px] bg-slate-100" />
             </View>
 
-            <TouchableOpacity
-              className="bg-white py-4 rounded-2xl border border-slate-200 flex-row items-center justify-center mb-6"
-            >
-              <Text className="text-xl mr-3">🔍</Text>
-              <Text className="text-slate-700 font-bold text-base">Continue with Google</Text>
+           <TouchableOpacity
+                onPress={handleGoogleSignIn}
+                activeOpacity={0.85}
+                className={`rounded-2xl py-4 border flex-row items-center justify-center mb-6 ${
+                  isDark
+                    ? "bg-slate-700 border-slate-600"
+                    : "bg-slate-50 border-slate-200"
+                }`}
+              >
+              <AntDesign
+                name="google"
+                size={20}
+                color="#00bba7"
+                style={{ marginRight: 12 }}
+              />
+
+              <Text
+                className={`font-bold text-base ${
+                  isDark ? "text-white" : "text-slate-900"
+                }`}
+              >
+                Continue with Google
+              </Text>
             </TouchableOpacity>
+
 
             <View className="flex-row justify-center pb-10">
               <Text className="text-slate-500 text-base">New to Dev Post? </Text>
