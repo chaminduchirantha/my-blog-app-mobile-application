@@ -12,6 +12,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+
 
 export default function RegisterScreen() {
   const router = useRouter();

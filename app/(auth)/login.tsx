@@ -9,7 +9,8 @@ import {
   ScrollView, 
   StatusBar, 
   Alert,
-  useColorScheme 
+  useColorScheme, 
+  Pressable
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -27,17 +28,13 @@ export default function LoginScreen() {
   const isDark = theme === "dark";
 
 
-  const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please enter both email and password");
-      return;
-    }
-    console.log("Logging in with:", email, password);
-  };
+  // const handleLogin = () => {
+    
+  // };
 
-  const handleGoogleSignIn = () => {
-    console.log("Google Sign In Clicked");
-  };
+  // const handleGoogleSignIn = () => {
+  //   console.log("Google Sign In Clicked");
+  // };
 
 
   return (
@@ -118,11 +115,18 @@ export default function LoginScreen() {
             </View>
 
             <TouchableOpacity
-              onPress={handleLogin}
+              // onPress={handleLogin}
               activeOpacity={0.8}
               className="bg-teal-600 py-4 rounded-2xl items-center shadow-md shadow-teal-600/30"
             >
-              <Text className="text-white font-bold text-lg">Sign In</Text>
+              <Pressable 
+                    className="mb-0"
+                    onPress={() => {
+                        router.replace('/home')
+                    }}
+                >
+                    <Text className="text-white font-bold text-lg">Sign In</Text>
+                </Pressable>
             </TouchableOpacity>
 
             <View className="flex-row items-center my-6">
@@ -132,7 +136,7 @@ export default function LoginScreen() {
             </View>
 
            <TouchableOpacity
-                onPress={handleGoogleSignIn}
+                // onPress={}
                 activeOpacity={0.85}
                 className={`rounded-2xl py-4 border flex-row items-center justify-center mb-6 ${
                   isDark
