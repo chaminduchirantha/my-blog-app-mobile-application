@@ -11,7 +11,7 @@ export default function CreatePostScreen() {
   const [image, setImage] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("Tech"); 
 
-  const categories = ["Tech", "Design", "Coding", "Lifestyle", "News", "Health"];
+  const categories = ["Tech", "Design", "Coding", "writing"];
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -35,7 +35,7 @@ export default function CreatePostScreen() {
           <Text className="text-slate-900 text-xl font-black">New Story</Text>
         </View>
         <TouchableOpacity className="bg-teal-600 px-5 py-2 rounded-full shadow-sm">
-          <Text className="text-white font-bold text-sm">Publish</Text>
+          <Text className="text-white font-bold text-sm">Publish and view</Text>
         </TouchableOpacity>
       </View>
 
@@ -92,15 +92,22 @@ export default function CreatePostScreen() {
 
         <View className="px-6">
           <TextInput
-            placeholder="Post Title"
-            placeholderTextColor="#cbd5e1"
-            className="text-2xl font-black text-slate-900 py-2 mb-6"
+            placeholder="post title"           
+            textAlign="center"
+            className="text-md rounded-2xl text-black py-4 mb-6 bg-slate-50"
+          />
+
+          <TextInput
+            placeholder="author name"
+            textAlign="center"
+            className="text-md rounded-2xl text-black py-4 mb-6 bg-slate-50"
           />
           
           <View className="bg-slate-50 rounded-[30px] p-5 border border-slate-100 min-h-[300px]">
             <TextInput
               placeholder="Start writing..."
               multiline
+              textAlign="center"
               textAlignVertical="top"
               className="text-slate-700 text-base"
             />

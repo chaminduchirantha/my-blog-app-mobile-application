@@ -2,10 +2,44 @@ import React from "react";
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons"; // Icons සඳහා
+import { Feather, Ionicons } from "@expo/vector-icons"; // Icons සඳහා
 
 export default function HomeScreen() {
   const router = useRouter();
+  const posts = [
+    {
+      id: 1,
+      title: "Mastering React Native in 2026",
+      category: "Coding",
+      author: "Jane Doe",
+      time: "2 min read",
+      image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=500",
+    },
+    {
+      id: 2,
+      title: "The Future of Minimalist Design",
+      category: "Design",
+      author: "Alex Post",
+      time: "5 min read",
+      image: "https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=500",
+    },
+    {
+      id: 3,
+      title: "10 Tips for Better Typography",
+      category: "Writing",
+      author: "Sam Smith",
+      time: "4 min read",
+      image: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=500",
+    },
+    {
+      id: 4,
+      title: "Setup your workspace for Productivity",
+      category: "Tech",
+      author: "Mike Ross",
+      time: "3 min read",
+      image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=500",
+    }
+  ];
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
@@ -62,32 +96,67 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        <View className="px-6 pb-10">
+        <View className="px-6">
           <View className="flex-row justify-between items-center mb-4">
             <Text className="text-slate-900 text-lg font-bold">Recent Posts</Text>
             <TouchableOpacity><Text className="text-teal-600 font-bold">View All</Text></TouchableOpacity>
           </View>
 
-          {[1, 2, 3].map((item) => (
-            <TouchableOpacity key={item} className="flex-row items-center bg-white p-4 rounded-2xl mb-4 border border-slate-100">
-              <View className="w-16 h-16 rounded-xl bg-slate-100 items-center justify-center mr-4">
-                <Feather name="image" size={24} color="#cbd5e1" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-slate-900 font-bold text-base mb-1" numberOfLines={1}>
-                  Mastering NativeWind in 2026
+          {posts.map((post) => (
+            <TouchableOpacity 
+              key={post.id} 
+              activeOpacity={0.9}
+              className="bg-white rounded-[25px] mb-5 overflow-hidden border border-slate-100 shadow-sm shadow-slate-200"
+            >
+              {/* Cover Image */}
+              <Image 
+                source={{ uri: post.image }} 
+                className="w-full h-44" 
+                resizeMode="cover" 
+              />
+              
+              <View className="p-4">
+                {/* Category & Time */}
+                <View className="flex-row justify-between items-center mb-2">
+                  <View className="bg-teal-50 px-3 py-1 rounded-lg">
+                    <Text className="text-teal-600 text-[10px] font-black uppercase">{post.category}</Text>
+                  </View>
+                  <Text className="text-slate-400 text-xs">{post.time}</Text>
+                </View>
+
+                {/* Title */}
+                <Text className="text-slate-900 font-black text-lg mb-3" numberOfLines={2}>
+                  {post.title}
                 </Text>
-                <Text className="text-slate-500 text-xs">Jan 16 • 1.2k Views</Text>
+
+                {/* Footer: Author & Actions */}
+                <View className="flex-row justify-between items-center mt-2 pt-3 border-t border-slate-50">
+                  <View className="flex-row items-center">
+                    <View className="w-6 h-6 rounded-full bg-slate-200 mr-2" />
+                    <Text className="text-slate-600 font-bold text-xs">{post.author}</Text>
+                  </View>
+
+                  {/* Actions: Like & Bookmark */}
+                  <View className="flex-row items-center">
+                    <TouchableOpacity className="mr-4 flex-row items-center">
+                      <Ionicons name="heart-outline" size={20} color="#64748b" />
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                      <Ionicons name="bookmark-outline" size={20} color="#64748b" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
-              <Feather name="chevron-right" size={20} color="#94a3b8" />
             </TouchableOpacity>
           ))}
         </View>
 
       </ScrollView>
 
-      {/* Floating Action Button (Create Post) */}
-      <TouchableOpacity className="absolute bottom-8 right-8 w-14 h-14 bg-teal-600 rounded-full items-center justify-center shadow-xl shadow-teal-600/50">
+      <TouchableOpacity className="absolute bottom-8 right-8 w-14 h-14 bg-teal-600 rounded-full items-center justify-center shadow-xl shadow-teal-600/50"
+        onPress={()=>router.push("/create")}
+        activeOpacity={0.7}
+      >
         <Feather name="plus" size={28} color="white" />
       </TouchableOpacity>
     </SafeAreaView>
