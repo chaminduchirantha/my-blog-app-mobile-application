@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 const tabs = [
   { name: 'home', icon: 'home-outline', activeIcon: 'home', title: 'Feed' },
-  { name: 'explore', icon: 'search-outline', activeIcon: 'search', title: 'Explore' },
+  { name: 'topics', icon: 'search-outline', activeIcon: 'search', title: 'Topics' },
   { name: 'create', icon: 'add-circle-outline', activeIcon: 'add-circle', title: 'Write' },
   { name: 'bookmarks', icon: 'bookmark-outline', activeIcon: 'bookmark', title: 'Saved' },
   { name: 'profile', icon: 'person-outline', activeIcon: 'person', title: 'Profile' },
@@ -24,8 +24,6 @@ const DashboardLayout = () => {
             </View>
             <Text style={{ fontSize: 20, fontWeight: '900', color: '#1e293b', letterSpacing: -0.5 }}>DEV POST</Text>
           </View>
-
-         
 
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
              <TouchableOpacity style={{ marginRight: 15 }}>
