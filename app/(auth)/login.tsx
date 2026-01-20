@@ -15,6 +15,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { loginUser } from "@/services/auth";
 
 
 
@@ -27,15 +28,20 @@ export default function LoginScreen() {
 
   const isDark = theme === "dark";
 
-
-  // const handleLogin = () => {
-    
-  // };
-
-  // const handleGoogleSignIn = () => {
-  //   console.log("Google Sign In Clicked");
-  // };
-
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Please enter email and password")
+      return
+    }
+    try {
+      await loginUser(email, password)
+      Alert.alert("Login successful!")
+      router.replace("/home")
+    } catch (e) {
+      console.error(e)
+      Alert.alert("Login failed. Please check your credentials and try again.")
+    }
+  }
 
   return (
     <SafeAreaView className={`flex-1 ${isDark ? "bg-slate-900" : "bg-slate-100"}`}>
@@ -115,18 +121,12 @@ export default function LoginScreen() {
             </View>
 
             <TouchableOpacity
-              // onPress={handleLogin}
+              onPress={handleLogin}
               activeOpacity={0.8}
               className="bg-teal-600 py-4 rounded-2xl items-center shadow-md shadow-teal-600/30"
             >
-              <Pressable 
-                    className="mb-0"
-                    onPress={() => {
-                        router.replace('/home')
-                    }}
-                >
-                    <Text className="text-white font-bold text-lg">Sign In</Text>
-                </Pressable>
+              
+                <Text className="text-white font-bold text-lg">Sign In</Text>
             </TouchableOpacity>
 
             <View className="flex-row items-center my-6">

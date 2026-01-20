@@ -25,3 +25,14 @@ export const registerUser = async (fullname: string, email: string, password: st
     throw error;
   }
 }
+
+export const loginUser = async (email: string, password: string) => {
+  try {
+    return await signInWithEmailAndPassword(auth, email, password);
+    
+    
+  } catch (error) {
+    console.error("Error logging in user:", error);
+    throw error;
+  }
+}
