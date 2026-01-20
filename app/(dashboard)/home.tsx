@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { Feather, Ionicons } from "@expo/vector-icons"; // Icons සඳහා
-
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { auth } from "@/services/firbase";
 export default function HomeScreen() {
   const router = useRouter();
   const posts = [
@@ -41,15 +41,32 @@ export default function HomeScreen() {
     }
   ];
 
+  const [userName, setUserName] = useState("User");
+
+  useEffect(() => {
+    const user = auth.currentUser;
+
+    if (user) {
+      if (user.displayName) {
+        setUserName(user.displayName);
+      } else if (user.email) {
+        setUserName(user.email.split("@")[0]); 
+      }
+    }
+  }, []);
+  
+
+
+
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <View className="px-6 py-4 flex-row justify-between items-center bg-white border-b border-slate-100">
         <View>
           <Text className="text-slate-500 text-xs font-bold tracking-widest">WELCOME BACK</Text>
-          <Text className="text-slate-900 text-xl font-black">Hi, Dev User 👋</Text>
+          <Text className="text-slate-900 text-xl font-black">Hi, Dev User  {userName} 👋</Text>
         </View>
         <TouchableOpacity className="w-10 h-10 rounded-full bg-teal-100 items-center justify-center border border-teal-200">
-          <Text className="text-teal-700 font-bold">JD</Text>
+          <Text className="text-teal-700 font-bold">{userName.charAt(0).toUpperCase()}</Text>
         </TouchableOpacity>
       </View>
 
@@ -108,7 +125,6 @@ export default function HomeScreen() {
               activeOpacity={0.9}
               className="bg-white rounded-[25px] mb-5 overflow-hidden border border-slate-100 shadow-sm shadow-slate-200"
             >
-              {/* Cover Image */}
               <Image 
                 source={{ uri: post.image }} 
                 className="w-full h-44" 
@@ -116,7 +132,6 @@ export default function HomeScreen() {
               />
               
               <View className="p-4">
-                {/* Category & Time */}
                 <View className="flex-row justify-between items-center mb-2">
                   <View className="bg-teal-50 px-3 py-1 rounded-lg">
                     <Text className="text-teal-600 text-[10px] font-black uppercase">{post.category}</Text>
@@ -124,19 +139,16 @@ export default function HomeScreen() {
                   <Text className="text-slate-400 text-xs">{post.time}</Text>
                 </View>
 
-                {/* Title */}
                 <Text className="text-slate-900 font-black text-lg mb-3" numberOfLines={2}>
                   {post.title}
                 </Text>
 
-                {/* Footer: Author & Actions */}
                 <View className="flex-row justify-between items-center mt-2 pt-3 border-t border-slate-50">
                   <View className="flex-row items-center">
                     <View className="w-6 h-6 rounded-full bg-slate-200 mr-2" />
                     <Text className="text-slate-600 font-bold text-xs">{post.author}</Text>
                   </View>
 
-                  {/* Actions: Like & Bookmark */}
                   <View className="flex-row items-center">
                     <TouchableOpacity className="mr-4 flex-row items-center">
                       <Ionicons name="heart-outline" size={20} color="#64748b" />

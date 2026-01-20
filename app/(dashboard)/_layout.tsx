@@ -1,8 +1,13 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Platform, StatusBar } from 'react-native';
-import { Tabs } from 'expo-router';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, Platform, StatusBar ,StyleSheet  } from 'react-native';
+import { router, Tabs } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+
+const DashboardLayout = () => {
+ const [showSettingsMenu, setShowSettingsMenu] = useState(false);
+
+  const toggleSettingsMenu = () => setShowSettingsMenu(!showSettingsMenu);
 
 const tabs = [
   { name: 'home', icon: 'home-outline', activeIcon: 'home', title: 'Feed' },
@@ -12,7 +17,22 @@ const tabs = [
   { name: 'profile', icon: 'person-outline', activeIcon: 'person', title: 'Profile' },
 ] as const;
 
-const DashboardLayout = () => {
+ 
+
+  const handleProfile = () => {
+    console.log("Go to Profile");
+    router.push("/(dashboard)/profile");
+    setShowSettingsMenu(false);
+  };
+
+  const handleLogout = () => {
+    console.log("Logout user");
+    router.replace("/(auth)/login");
+    setShowSettingsMenu(false);
+  };
+  
+
+
   return (
     <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
       <SafeAreaView edges={['top']} style={{ backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
@@ -29,9 +49,21 @@ const DashboardLayout = () => {
              <TouchableOpacity style={{ marginRight: 15 }}>
                 <Ionicons name="notifications-outline" size={24} color="#64748b" />
              </TouchableOpacity>
-             <TouchableOpacity>
+             <TouchableOpacity onPress={toggleSettingsMenu}>
                 <Ionicons name="settings-outline" size={24} color="#64748b" />
              </TouchableOpacity>
+
+             
+             {showSettingsMenu && (
+               <View style={styles.dropdown}>
+                 <TouchableOpacity onPress={handleProfile} style={styles.dropdownItem}>
+                   <Text>Profile</Text>
+                 </TouchableOpacity>
+                 <TouchableOpacity onPress={handleLogout} style={styles.dropdownItem}>
+                   <Text>Logout</Text>
+                 </TouchableOpacity>
+               </View>
+             )}
           </View>
         </View>
       </SafeAreaView>
@@ -51,6 +83,7 @@ const DashboardLayout = () => {
             borderBottomWidth: 1,
             borderBottomColor: '#f1f5f9',
             height: 100,
+            zIndex: 1000,
           },
           tabBarLabelStyle: {
             fontSize: 11,
@@ -79,5 +112,28 @@ const DashboardLayout = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  dropdown: {
+    position: 'absolute',
+    top: -65,
+    right: 0,
+    width: 140,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5,
+    paddingVertical: 5,
+    zIndex: 100000,
+  },
+  dropdownItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+  },
+});
+
 
 export default DashboardLayout;
