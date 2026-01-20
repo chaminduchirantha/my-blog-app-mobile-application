@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { registerUser } from "@/services/auth";
 
 
 export default function RegisterScreen() {
@@ -27,7 +28,7 @@ export default function RegisterScreen() {
   
   const isDark = theme === "dark";
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!name || !email || !password || !confirmPassword) {
       Alert.alert("Error", "Please fill in all fields");
       return;
@@ -38,7 +39,14 @@ export default function RegisterScreen() {
       return;
     }
 
-    console.log("Registering with:", name, email, password);
+    try {
+      await registerUser(name, email, password)
+      Alert.alert("Account created..!")
+      router.replace("/login")
+    } catch (e) {
+      console.error(e)
+      Alert.alert("Register fail..!")
+    }
   };
 
   return (
