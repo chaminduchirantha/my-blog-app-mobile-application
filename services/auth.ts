@@ -3,23 +3,30 @@ import { auth } from "./firbase";
 import { doc, setDoc } from "firebase/firestore"
 import { db } from "./firbase";
 
-export const registerUser = async (fullname: string, email: string, password: string) => {
+export const registerUser = async (fullname: string, email: string, password: string, profileImageBase64?: string
+) => {
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
-    await updateProfile(userCredential.user, {
-      displayName: fullname
-    })
 
-    await setDoc(doc(db, "users", userCredential.user.uid), {
-      uid: userCredential.user.uid,
+    const photoURL = profileImageBase64
+      ? `data:image/jpeg;base64,${profileImageBase64}`
+      : "";
+
+    await updateProfile(user, {
+      displayName: fullname,
+    });
+
+    await setDoc(doc(db, "users", user.uid), {
+      uid: user.uid,
       name: fullname,
-      role: "",
-      createAt : new Date()
-    })
+      role: "user",
+      photoURL: photoURL,
+      createdAt: new Date(), 
+    });
 
-    return userCredential.user
-    
+    return user;
   } catch (error) {
     console.error("Error registering user:", error);
     throw error;
