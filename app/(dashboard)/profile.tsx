@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { auth, db } from "@/services/firbase";
 import { useEffect, useState } from "react";
 import { router } from "expo-router";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc ,query,collection,where,getDocs } from "firebase/firestore";
 
 
 
@@ -12,7 +12,15 @@ export default function ProfileScreen() {
 
     const [modalVisible, setModalVisible] = useState(false);
     const [profileImage, setProfileImage] = useState<string | null>(null);
+    const [postCount, setPostCount] = useState(0);
+    const [myPosts, setMyPosts] = useState<Post[]>([]);
 
+    interface Post {
+      id: string;
+      title: string;
+      content:string
+      createdAt?: any;
+    }
 
     useEffect(() => {
       const fetchProfile = async () => {
@@ -23,9 +31,28 @@ export default function ProfileScreen() {
           const data = docSnap.data();
           setProfileImage(data.photoURL || null);
         }
-      };
+
+        try {
+        const q = query(
+          collection(db, "posts"), 
+          where("userId", "==", user.uid)
+        );
+        
+        const querySnapshot = await getDocs(q);
+        
+        const postsArray: Post[] = []; 
+        
+        querySnapshot.forEach((doc) => {
+          postsArray.push({ id: doc.id, ...doc.data() } as Post); 
+        });
+
+        setMyPosts(postsArray);
+      } catch (error) {
+        console.log("Error fetching user posts:", error);
+      }
+    };
       fetchProfile();
-    }, []);
+    }, [user]);
 
     const handleSave = async () => {
       try {
@@ -56,7 +83,7 @@ export default function ProfileScreen() {
 
         <View className="flex-row justify-around mt-8">
           <View className="items-center">
-            <Text className="text-lg font-bold">24</Text>
+            <Text className="text-lg font-bold">{postCount}</Text>
             <Text className="text-gray-500 text-sm">Post count</Text>
           </View>
         </View>
@@ -76,27 +103,27 @@ export default function ProfileScreen() {
         </View>
 
         <View className="px-5 mt-10">
-          <Text className="text-lg font-bold mb-4">
-            My Posts
-          </Text>
+          <Text className="text-lg font-bold mb-4">My Posts</Text>
 
-          <View className="bg-gray-100 p-4 rounded-xl mb-3">
-            <Text className="font-semibold text-base">
-              Mastering React Native
+          {myPosts.length > 0 ? (
+            myPosts.map((post) => (
+              <View key={post.id} className="bg-gray-100 p-4 rounded-xl mb-3 shadow-sm">
+                <Text className="font-semibold text-base text-slate-800">
+                  {post.title}
+                </Text>
+                <Text className="font-semibold text-base text-slate-800">
+                  {post.content}
+                </Text>
+                <Text className="text-gray-500 text-xs mt-1">
+                  {post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString() : "Just now"}
+                </Text>
+              </View>
+            ))
+          ) : (
+            <Text className="text-gray-400 text-center mt-4 italic">
+              You haven't posted anything yet.
             </Text>
-            <Text className="text-gray-500 text-xs mt-1">
-              Jan 18, 2026
-            </Text>
-          </View>
-
-          <View className="bg-gray-100 p-4 rounded-xl mb-3">
-            <Text className="font-semibold text-base">
-              Why MERN Stack is Powerful
-            </Text>
-            <Text className="text-gray-500 text-xs mt-1">
-              Jan 15, 2026
-            </Text>
-          </View>
+          )}
         </View>
 
       </ScrollView>
