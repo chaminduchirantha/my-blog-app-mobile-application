@@ -1,36 +1,50 @@
 import { View, Text, Image, ScrollView, TouchableOpacity, TextInput, Modal } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { auth } from "@/services/firbase";
-import { useState } from "react";
+import { auth, db } from "@/services/firbase";
+import { useEffect, useState } from "react";
 import { router } from "expo-router";
+import { doc, getDoc } from "firebase/firestore";
+
 
 
 export default function ProfileScreen() {
+    const user = auth.currentUser;
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [profileImage, setProfileImage] = useState<string | null>(null);
 
 
-    const user = auth.currentUser;
-    const firstLetter = user?.displayName
-    ? user.displayName.charAt(0).toUpperCase()
-    : "U";
-
+    useEffect(() => {
+      const fetchProfile = async () => {
+        if (!user) return;
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setProfileImage(data.photoURL || null);
+        }
+      };
+      fetchProfile();
+    }, []);
 
     const handleSave = async () => {
-    try {
-      setModalVisible(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+      try {
+        setModalVisible(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView showsVerticalScrollIndicator={false}>
 
         <View className="items-center mt-8">
-          <Text className="text-black px-10 py-8 bg-teal-600 rounded-full text-5xl font-bold">
-              {firstLetter}
-            </Text>
+          {profileImage && (
+            <Image
+              source={{ uri: profileImage }} 
+              className="w-32 h-32 rounded-full"
+            />
+          )}
           <Text className="text-xl font-bold mt-4">
             {user?.displayName || "No Name"}
           </Text>
@@ -38,6 +52,7 @@ export default function ProfileScreen() {
             {user?.email} | Blogger ✍️
           </Text>
         </View>
+
 
         <View className="flex-row justify-around mt-8">
           <View className="items-center">

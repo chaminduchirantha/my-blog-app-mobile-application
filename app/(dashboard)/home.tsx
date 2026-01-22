@@ -3,7 +3,8 @@ import { View, Text, ScrollView, TextInput, TouchableOpacity, Image } from "reac
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import { auth } from "@/services/firbase";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "@/services/firbase"; 
 export default function HomeScreen() {
   const router = useRouter();
   const posts = [
@@ -42,17 +43,26 @@ export default function HomeScreen() {
   ];
 
   const [userName, setUserName] = useState("User");
+  const [profileImage, setProfileImage] = useState<string | null>(null);
 
   useEffect(() => {
-    const user = auth.currentUser;
+    const fetchUserData = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
 
-    if (user) {
-      if (user.displayName) {
-        setUserName(user.displayName);
-      } else if (user.email) {
-        setUserName(user.email.split("@")[0]); 
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setUserName(data.name || user.displayName || "User");
+          setProfileImage(data.photoURL || null); 
+        } else {
+          setUserName(user.displayName || user.email?.split("@")[0] || "User");
+        }
       }
-    }
+    };
+
+    fetchUserData();
   }, []);
   
 
@@ -65,8 +75,20 @@ export default function HomeScreen() {
           <Text className="text-slate-500 text-xs font-bold tracking-widest">WELCOME BACK</Text>
           <Text className="text-slate-900 text-xl font-black">Hi, Dev User  {userName} 👋</Text>
         </View>
-        <TouchableOpacity className="w-10 h-10 rounded-full bg-teal-100 items-center justify-center border border-teal-200">
-          <Text className="text-teal-700 font-bold">{userName.charAt(0).toUpperCase()}</Text>
+        <TouchableOpacity 
+          className="w-10 h-10 rounded-full bg-teal-100 items-center justify-center border border-teal-200 overflow-hidden"
+          onPress={() => router.push("/profile")}
+        >
+          {profileImage ? (
+            <Image 
+              source={{ uri: profileImage }} 
+              className="w-full h-full" 
+            />
+          ) : (
+            <Text className="text-teal-700 font-bold">
+              {userName.charAt(0).toUpperCase()}
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
 
