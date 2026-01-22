@@ -1,40 +1,87 @@
 import React, { useState } from "react";
 import { 
   View, Text, ScrollView, TextInput, TouchableOpacity, 
-  Image, KeyboardAvoidingView, Platform 
+  Image, KeyboardAvoidingView, Platform, 
+  Alert
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import * as ImagePicker from 'expo-image-picker';
+import { addPost } from "@/services/postService";
 
 export default function CreatePostScreen() {
   const [image, setImage] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("Tech"); 
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [content, setContent] = useState("");
 
-  const categories = ["Tech", "Design", "Coding", "writing"];
+  const categories = ["Tech", "Design", "Coding", "Writing"];
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: "images",
       allowsEditing: true,
       aspect: [16, 9],
       quality: 1,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri); 
+      setImage(result.assets[0].uri);
     }
   };
 
+  const getImageBase64 = async (uri: string): Promise<string | null> => {
+    try {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      const reader = new FileReader();
+      return await new Promise((resolve, reject) => {
+        reader.onerror = () => reject(null);
+        reader.onload = () => resolve(reader.result as string);
+        reader.readAsDataURL(blob);
+      });
+    } catch (err) {
+      console.log("Error converting image:", err);
+      return null;
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!title || !author || !content) {
+      Alert.alert("Please fill all fields");
+      return;
+    }
+
+    let imageBase64: string | null = null;
+    if (image) {
+      imageBase64 = await getImageBase64(image);
+    }
+
+    try {
+      await addPost(title, author, selectedCategory, content, imageBase64);
+      Alert.alert("Post created!", `Title: ${title}`);
+      
+      setTitle("");
+      setAuthor("");
+      setContent("");
+      setImage(null);
+      setSelectedCategory("Tech");
+    } catch (err: any) {
+      console.log(err);
+      Alert.alert("Error", err.message || "Something went wrong");
+    }
+  };
+  
+
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {/* Header */}
       <View className="px-6 py-4 flex-row justify-between items-center bg-white border-b border-slate-100">
         <View>
           <Text className="text-slate-500 text-xs font-bold tracking-widest uppercase">Draft</Text>
           <Text className="text-slate-900 text-xl font-black">New Story</Text>
         </View>
-        <TouchableOpacity className="bg-teal-600 px-5 py-2 rounded-full shadow-sm">
+        <TouchableOpacity className="bg-teal-600 px-5 py-2 rounded-full shadow-sm" onPress={handlePublish}>
           <Text className="text-white font-bold text-sm">Publish and view</Text>
         </TouchableOpacity>
       </View>
@@ -92,14 +139,18 @@ export default function CreatePostScreen() {
 
         <View className="px-6">
           <TextInput
-            placeholder="post title"           
+            placeholder="Post title"           
             textAlign="center"
+            value={title}
+            onChangeText={setTitle}
             className="text-md rounded-2xl text-black py-4 mb-6 bg-slate-50"
           />
 
           <TextInput
-            placeholder="author name"
+            placeholder="Author name"
             textAlign="center"
+            value={author}
+            onChangeText={setAuthor}
             className="text-md rounded-2xl text-black py-4 mb-6 bg-slate-50"
           />
           
@@ -109,10 +160,12 @@ export default function CreatePostScreen() {
               multiline
               textAlign="center"
               textAlignVertical="top"
+              value={content}
+              onChangeText={setContent}
               className="text-slate-700 text-base"
             />
           </View>
-        </View>
+        </View> 
       </ScrollView>
     </SafeAreaView>
   );
