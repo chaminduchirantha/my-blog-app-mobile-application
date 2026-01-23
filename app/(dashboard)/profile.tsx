@@ -20,6 +20,7 @@ export default function ProfileScreen() {
       title: string;
       content:string
       createdAt?: any;
+      imageBase64?: string | null;
     }
 
     useEffect(() => {
@@ -47,6 +48,7 @@ export default function ProfileScreen() {
         });
 
         setMyPosts(postsArray);
+        setPostCount(postsArray.length);
       } catch (error) {
         console.log("Error fetching user posts:", error);
       }
@@ -108,6 +110,22 @@ export default function ProfileScreen() {
           {myPosts.length > 0 ? (
             myPosts.map((post) => (
               <View key={post.id} className="bg-gray-100 p-4 rounded-xl mb-3 shadow-sm">
+
+                {post.imageBase64 ? (
+                  <Image
+                  source={{
+                      uri: post.imageBase64?.startsWith("data:image")
+                        ? post.imageBase64
+                        : `data:image/jpeg;base64,${post.imageBase64}`,
+                    }}
+                    className="w-full h-20 rounded-2xl"
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View className="w-20 h-20 bg-slate-200 rounded-2xl items-center justify-center">
+                    <Text className="text-[10px] text-slate-400">No image </Text>
+                  </View>
+                )}
                 <Text className="font-semibold text-base text-slate-800">
                   {post.title}
                 </Text>
