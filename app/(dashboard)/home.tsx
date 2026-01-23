@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TextInput, TouchableOpacity, Image } from "reac
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import { collection, getDocs,getDoc, query, orderBy, doc } from "firebase/firestore";
+import { collection, getDocs,getDoc, query, orderBy, doc ,Timestamp } from "firebase/firestore";
 import { auth, db } from "@/services/firbase"; 
 export default function HomeScreen() {
   const router = useRouter();
@@ -45,6 +45,7 @@ export default function HomeScreen() {
   const [userName, setUserName] = useState("User");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [posts, setPosts] = useState<any[]>([]);
+  const [isExpanded, setIsExpanded] = useState(false);
 
 
   useEffect(() => {
@@ -93,8 +94,22 @@ export default function HomeScreen() {
   fetchPostsAndProfile();
 }, []);
 
-  
+  const formatTime = (createdAt: Timestamp | null | undefined) => {
+    if (!createdAt) return ""; 
 
+    const seconds = createdAt.seconds;
+    if (!seconds) return "Just now";
+
+    const postDate = new Date(seconds * 1000);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - postDate.getTime()) / 1000);
+
+    if (diffInSeconds < 0) return "Just now";
+    if (diffInSeconds < 1600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    
+    return postDate.toLocaleDateString();
+  };
 
 
   return (
@@ -154,15 +169,34 @@ export default function HomeScreen() {
             <TouchableOpacity 
               key={post.id} 
               activeOpacity={0.9}
-              className="bg-white rounded-[25px] mb-5 overflow-hidden border border-slate-100 shadow-sm shadow-slate-200"
+              className="bg-white  mb-5 overflow-hidden border border-slate-100 shadow-sm shadow-slate-200"
             >
+              <View className="flex-row items-center p-3">
+                <View className="w-10 h-10 bg-slate-200 rounded-full items-center justify-center">
+                  <Text className="text-slate-600 font-bold">{post.author?.charAt(0)}</Text>
+                </View>
+                <View className="ml-3 flex-1">
+                  <Text className="text-slate-900 font-bold text-[15px]">{post.author}</Text>
+                  <View className="flex-row items-center">
+                    <Text className="text-slate-500 text-[12px]">
+                      {formatTime(post.createdAt)}
+                    </Text>
+                    <Text className="text-slate-500 text-[12px] mx-1">•</Text>
+                    <Ionicons name="earth" size={12} color="#64748b" />
+                  </View>
+                </View>
+                <TouchableOpacity>
+                  <Ionicons name="ellipsis-horizontal" size={20} color="#64748b" />
+                </TouchableOpacity>
+              </View>
+
               <Image
                 source={{
                   uri: post.imageBase64?.startsWith("data:image")
                         ? post.imageBase64
                         : `data:image/jpeg;base64,${post.imageBase64}`,
                 }}
-                className="w-full h-44"
+                className="w-full h-80"
                 resizeMode="cover"
               />
               
@@ -177,24 +211,33 @@ export default function HomeScreen() {
                   </Text>
                 </View>
 
-                <Text className="text-slate-900 font-black text-lg mb-3">
-                  {post.title}
-                </Text>
-                <Text className="font-semibold text-base text-slate-800">
-                  {post.content}
-                </Text>
+                <View className="px-3 pb-3">
+                  <Text className="text-slate-900 font-bold text-lg mb-1">{post.title}</Text>
+                  <Text 
+                    className="text-slate-800 text-[14px] leading-5"
+                    numberOfLines={isExpanded ? undefined : 14}
+                  >
+                    {post.content}
+                  </Text>
+                  {post.content?.length > 150 && (
+                    <TouchableOpacity onPress={() => setIsExpanded(!isExpanded)} className="mt-1">
+                      <Text className="text-slate-500 font-bold text-[14px]">
+                        {isExpanded ? "Show Less" : "See More..."}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
 
                 <View className="flex-row justify-between items-center mt-2 pt-3 border-t border-slate-50">
-                  <View className="flex-row items-center">
-                    <Text className="text-slate-600 font-bold text-xs">{post.author}</Text>
-                  </View>
-
-                  <View className="flex-row items-center">
-                    <TouchableOpacity className="mr-4 flex-row items-center">
-                      <Ionicons name="heart-outline" size={20} color="#64748b" />
+                  <View className="flex-row justify-between px-2 py-1 border-t border-slate-50">
+                    <TouchableOpacity className="flex-1 flex-row items-center justify-center py-2">
+                      <Ionicons name="thumbs-up-outline" size={20} color="#64748b" />
+                      <Text className="ml-2 text-slate-500 font-semibold">Like</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    
+                    <TouchableOpacity className="flex-1 flex-row items-center justify-center py-2">
                       <Ionicons name="bookmark-outline" size={20} color="#64748b" />
+                      <Text className="ml-2 text-slate-500 font-semibold">save</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
