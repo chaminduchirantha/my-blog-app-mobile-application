@@ -3,67 +3,96 @@ import { View, Text, ScrollView, TextInput, TouchableOpacity, Image } from "reac
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, getDocs,getDoc, query, orderBy, doc } from "firebase/firestore";
 import { auth, db } from "@/services/firbase"; 
 export default function HomeScreen() {
   const router = useRouter();
-  const posts = [
-    {
-      id: 1,
-      title: "Mastering React Native in 2026",
-      category: "Coding",
-      author: "Jane Doe",
-      time: "2 min read",
-      image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=500",
-    },
-    {
-      id: 2,
-      title: "The Future of Minimalist Design",
-      category: "Design",
-      author: "Alex Post",
-      time: "5 min read",
-      image: "https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=500",
-    },
-    {
-      id: 3,
-      title: "10 Tips for Better Typography",
-      category: "Writing",
-      author: "Sam Smith",
-      time: "4 min read",
-      image: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=500",
-    },
-    {
-      id: 4,
-      title: "Setup your workspace for Productivity",
-      category: "Tech",
-      author: "Mike Ross",
-      time: "3 min read",
-      image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=500",
-    }
-  ];
+  // const posts = [
+  //   {
+  //     id: 1,
+  //     title: "Mastering React Native in 2026",
+  //     category: "Coding",
+  //     author: "Jane Doe",
+  //     time: "2 min read",
+  //     image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=500",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "The Future of Minimalist Design",
+  //     category: "Design",
+  //     author: "Alex Post",
+  //     time: "5 min read",
+  //     image: "https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=500",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "10 Tips for Better Typography",
+  //     category: "Writing",
+  //     author: "Sam Smith",
+  //     time: "4 min read",
+  //     image: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=500",
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "Setup your workspace for Productivity",
+  //     category: "Tech",
+  //     author: "Mike Ross",
+  //     time: "3 min read",
+  //     image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=500",
+  //   }
+  // ];
 
   const [userName, setUserName] = useState("User");
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [posts, setPosts] = useState<any[]>([]);
+
 
   useEffect(() => {
-    const fetchUserData = async () => {
+  const fetchPostsAndProfile = async () => {
+    try {
+      const q = query(
+        collection(db, "posts"),
+        orderBy("createdAt", "desc")
+      );
+
+      const snapshot = await getDocs(q);
+
+      const postsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setPosts(postsData);
+
       const user = auth.currentUser;
-      if (user) {
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
+      if (!user) return;
 
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setUserName(data.name || user.displayName || "User");
-          setProfileImage(data.photoURL || null); 
+      setUserName(user.displayName || "User");
+
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        const data = userSnap.data();
+        if (data.photoURL) {
+          setProfileImage(data.photoURL);
+        } else if (user.photoURL) {
+          setProfileImage(user.photoURL);
         } else {
-          setUserName(user.displayName || user.email?.split("@")[0] || "User");
+          setProfileImage(null);
         }
+      } else {
+        setProfileImage(user.photoURL || null);
       }
-    };
 
-    fetchUserData();
-  }, []);
+    } catch (error) {
+      console.log("Error loading home data:", error);
+    }
+  };
+
+  fetchPostsAndProfile();
+}, []);
+
   
 
 
@@ -119,38 +148,22 @@ export default function HomeScreen() {
           </ScrollView>
         </View>
 
-        <View className="px-6 mb-8">
-          <Text className="text-slate-900 text-lg font-bold mb-4">Featured Story</Text>
-          <TouchableOpacity className="bg-teal-600 rounded-[30px] p-6 shadow-xl shadow-teal-600/40">
-            <Text className="text-teal-100 text-xs font-black mb-2 tracking-widest uppercase">Editor's Choice</Text>
-            <Text className="text-white text-2xl font-bold leading-8 mb-4">
-              How to build premium apps with React Native & Tailwind
-            </Text>
-            <View className="flex-row items-center">
-              <View className="w-8 h-8 rounded-full bg-white/20 items-center justify-center mr-3">
-                <Text className="text-white text-[10px] font-bold">AP</Text>
-              </View>
-              <Text className="text-teal-500 font-medium text-sm">By Alex Post • 5 min read</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-
+      
         <View className="px-6">
-          <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-slate-900 text-lg font-bold">Recent Posts</Text>
-            <TouchableOpacity><Text className="text-teal-600 font-bold">View All</Text></TouchableOpacity>
-          </View>
-
           {posts.map((post) => (
             <TouchableOpacity 
               key={post.id} 
               activeOpacity={0.9}
               className="bg-white rounded-[25px] mb-5 overflow-hidden border border-slate-100 shadow-sm shadow-slate-200"
             >
-              <Image 
-                source={{ uri: post.image }} 
-                className="w-full h-44" 
-                resizeMode="cover" 
+              <Image
+                source={{
+                  uri: post.imageBase64?.startsWith("data:image")
+                        ? post.imageBase64
+                        : `data:image/jpeg;base64,${post.imageBase64}`,
+                }}
+                className="w-full h-44"
+                resizeMode="cover"
               />
               
               <View className="p-4">
@@ -158,16 +171,21 @@ export default function HomeScreen() {
                   <View className="bg-teal-50 px-3 py-1 rounded-lg">
                     <Text className="text-teal-600 text-[10px] font-black uppercase">{post.category}</Text>
                   </View>
-                  <Text className="text-slate-400 text-xs">{post.time}</Text>
+                  <Text className="text-slate-400 text-xs">{post.createdAt?.seconds
+                    ? new Date(post.createdAt.seconds * 1000).toLocaleDateString()
+                    : "Just now"}
+                  </Text>
                 </View>
 
-                <Text className="text-slate-900 font-black text-lg mb-3" numberOfLines={2}>
+                <Text className="text-slate-900 font-black text-lg mb-3">
                   {post.title}
+                </Text>
+                <Text className="font-semibold text-base text-slate-800">
+                  {post.content}
                 </Text>
 
                 <View className="flex-row justify-between items-center mt-2 pt-3 border-t border-slate-50">
                   <View className="flex-row items-center">
-                    <View className="w-6 h-6 rounded-full bg-slate-200 mr-2" />
                     <Text className="text-slate-600 font-bold text-xs">{post.author}</Text>
                   </View>
 
