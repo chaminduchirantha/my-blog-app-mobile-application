@@ -76,41 +76,11 @@ export default function CreatePostScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="px-6 py-4 flex-row justify-between items-center bg-white border-b border-slate-100">
-        <View>
-          <Text className="text-slate-500 text-xs font-bold tracking-widest uppercase">Draft</Text>
-          <Text className="text-slate-900 text-xl font-black">New Story</Text>
-        </View>
-        <TouchableOpacity className="bg-teal-600 px-5 py-2 rounded-full shadow-sm" onPress={handlePublish}>
-          <Text className="text-white font-bold text-sm">Publish and view</Text>
-        </TouchableOpacity>
-      </View>
+      
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
         
-        <View className="px-6 py-6">
-          <TouchableOpacity 
-            onPress={pickImage} 
-            activeOpacity={0.7}
-            className="w-full h-52 bg-slate-50 rounded-[30px] border-2 border-dashed border-slate-200 items-center justify-center overflow-hidden"
-          >
-            {image ? (
-              <Image source={{ uri: image }} className="w-full h-full" />
-            ) : (
-              <View className="items-center">
-                <View className="bg-white p-4 rounded-full shadow-sm mb-2">
-                  <Feather name="image" size={28} color="#0d9488" />
-                </View>
-                <Text className="text-slate-400 font-bold">Add Cover Photo</Text>
-              </View>
-            )}
-            {image && (
-              <View className="absolute bottom-3 right-3 bg-black/50 p-2 rounded-full">
-                <Feather name="edit-2" size={16} color="white" />
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
+        
 
         <View className="px-6 mb-6">
           <Text className="text-slate-400 text-xs font-black tracking-widest uppercase mb-3 ml-1">
@@ -140,31 +110,62 @@ export default function CreatePostScreen() {
         <View className="px-6">
           <TextInput
             placeholder="Post title"           
-            textAlign="center"
             value={title}
             onChangeText={setTitle}
-            className="text-md rounded-2xl text-black py-4 mb-6 bg-slate-50"
+            className="text-md rounded-2xl text-black py-4  p-5  mb-6 bg-slate-50 border border-black"
           />
 
           <TextInput
             placeholder="Author name"
-            textAlign="center"
             value={author}
             onChangeText={setAuthor}
-            className="text-md rounded-2xl text-black py-4 mb-6 bg-slate-50"
+            className="text-md rounded-2xl border border-black  p-5  text-black py-4 mb-6 bg-slate-50"
           />
           
-          <View className="bg-slate-50 rounded-[30px] p-5 border border-slate-100 min-h-[300px]">
+          <View className="bg-slate-50 rounded-[30px] p-5 min-h-[300px] border border-black">
             <TextInput
               placeholder="Start writing..."
               multiline
-              textAlign="center"
               textAlignVertical="top"
               value={content}
               onChangeText={setContent}
-              className="text-slate-700 text-base"
+              className="text-slate-700 text-base "
             />
           </View>
+
+          <View className="px-6 py-6">
+          <TouchableOpacity 
+            onPress={pickImage} 
+            activeOpacity={0.7}
+            className="w-full h-52 bg-slate-50 rounded-[30px] border border-black  border-dashed items-center justify-center overflow-hidden"
+          >
+            {image ? (
+              <Image source={{ uri: image }} className="w-full h-full" />
+            ) : (
+              <View className="items-center">
+                <View className="bg-white p-4 rounded-full shadow-sm mb-2">
+                  <Feather name="image" size={28} color="#0d9488" />
+                </View>
+                <Text className="text-slate-400 font-bold">Add Cover Photo</Text>
+              </View>
+            )}
+            {image && (
+              <View className="absolute bottom-3 right-3 bg-black/50 p-2 rounded-full">
+                <Feather name="edit-2" size={16} color="white" />
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        <View className="px-6 py-4 flex-row justify-between items-center bg-white border-b border-slate-100">
+        <View>
+          <Text className="text-slate-500 text-xs font-bold tracking-widest uppercase">Draft</Text>
+          <Text className="text-slate-900 text-xl font-black">New Story</Text>
+        </View>
+        <TouchableOpacity className="bg-teal-600 px-5 py-2 rounded-full shadow-sm" onPress={handlePublish}>
+          <Text className="text-white font-bold text-sm">Publish and view</Text>
+        </TouchableOpacity>
+      </View>
         </View> 
       </ScrollView>
     </SafeAreaView>
