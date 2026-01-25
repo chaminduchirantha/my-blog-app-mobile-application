@@ -205,28 +205,11 @@ export default function HomeScreen() {
         </View>
 
         <View className="px-6 mb-6">
-          <Text className={`${isDark ? "text-slate-100" : "text-slate-900"} text-lg font-bold mb-4`}>
-            Categories
-          </Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             className="flex-row"
           >
-            {["All", "Design", "Coding", "Writing", "Tech"].map(
-              (cat, index) => (
-                <TouchableOpacity
-                  key={index}
-                  className={`mr-3 px-5 py-2.5 rounded-xl ${index === 0 ? "bg-teal-600" : "bg-white border border-slate-200"}`}
-                >
-                  <Text
-                    className={`font-bold ${index === 0 ? "text-white" : "text-slate-500"}`}
-                  >
-                    {cat}
-                  </Text>
-                </TouchableOpacity>
-              ),
-            )}
           </ScrollView>
         </View>
 
@@ -235,7 +218,7 @@ export default function HomeScreen() {
             <TouchableOpacity
               key={post.id}
               activeOpacity={0.9}
-              className={`${isDark ? "bg-slate-800" : "bg-white"} mb-5 overflow-hidden border border-slate-100 shadow-sm shadow-slate-200`}
+              className={`${isDark ? "bg-slate-800" : "bg-white"} mb-5 overflow-hidden  shadow-sm shadow-slate-200`}
             >
               <View className="flex-row items-center p-3">
                 <View className={`w-10 h-10 ${isDark ? "bg-slate-700" : "bg-slate-200"} rounded-full items-center justify-center`}>
