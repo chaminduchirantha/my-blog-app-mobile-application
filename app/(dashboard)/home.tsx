@@ -158,38 +158,84 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView className={`flex-1 ${isDark ? "bg-slate-900" : "bg-slate-100"}`}>
-      <View className={`px-6 py-4 flex-row justify-between items-center border-b border-slate-100${isDark ? "bg-slate-900" : "bg-slate-100"}`}>
-        <View>
-          <Text className="text-slate-500 text-xs font-bold tracking-widest">
-            WELCOME BACK
-          </Text>
-          <Text className={`${isDark ? "text-slate-100" : "text-slate-900"} text-xl font-black`}>
-            Hi, Dev User {userName} 👋
-          </Text>
-        </View>
-        <TouchableOpacity
-          className="w-10 h-10 rounded-full bg-teal-100 items-center justify-center border border-teal-200 overflow-hidden"
-          onPress={() => router.push("/profile")}
-        >
-          {profileImage ? (
-            <Image source={{ uri: profileImage }} className="w-full h-full" />
-          ) : (
-            <Text className="text-teal-700 font-bold">
-              {userName.charAt(0).toUpperCase()}
+      <View className={`pt-12 pb-4 ${isDark ? "bg-slate-950" : "bg-slate-50"}`}>
+        
+        <View className="px-6 flex-row justify-between items-center mb-6">
+          <View>
+            <Text className="text-teal-500 text-[10px] font-black tracking-[2px]">HELLO</Text>
+            <Text className={`${isDark ? "text-white" : "text-slate-900"} text-xl font-bold`}>
+              {userName} 👋
             </Text>
-          )}
-        </TouchableOpacity>
-         <TouchableOpacity
-            onPress={() => setTheme(isDark ? "light" : "dark")}
-            // className="absolute right-6 top-6"
+          </View>
+
+          <View className="flex-row items-center gap-x-3">
+            <TouchableOpacity
+              onPress={() => setTheme(isDark ? "light" : "dark")}
+              className={`p-2.5 rounded-2xl ${isDark ? "bg-slate-900 border border-slate-800" : "bg-white border border-slate-200"}`}
+            >
+              <Ionicons name={isDark ? "sunny" : "moon"} size={20} color={isDark ? "#fbbf24" : "#64748b"} />
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              className="w-11 h-11 rounded-2xl border-2 border-teal-500/20 overflow-hidden"
+              onPress={() => router.push("/profile")}
+            >
+              {profileImage ? (
+                <Image source={{ uri: profileImage }} className="w-full h-full" />
+              ) : (
+                <View className="bg-teal-500 w-full h-full items-center justify-center">
+                  <Text className="text-white font-bold">{userName.charAt(0)}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View className="px-4">
+          <View
+            className={`flex-row items-center justify-between px-0 py-4 rounded-2xl
+            ${isDark ? "bg-slate-900" : "bg-slate-200/50"}`}
           >
-            <Ionicons
-              name={isDark ? "sunny" : "moon"}
-              size={26}
-              color={isDark ? "#99a1af" : "#99a1af"}
-              style={{ opacity: 0.85 }}
-            />
-          </TouchableOpacity>
+            <TouchableOpacity
+              className="items-center flex-1"
+              onPress={() => router.push("/")}
+            >
+              <Ionicons name="home" size={24} color="#10b981" />
+              <Text className="text-xs text-teal-500">Home</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="items-center flex-1"
+              onPress={() => router.push("/bookmarks")}
+            >
+              <Ionicons name="bookmark-outline" size={24} color="#64748b" />
+              <Text className="text-xs text-slate-500">Saved</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => router.push("/create")}
+              className="w-14 h-14 bg-teal-600 rounded-full items-center justify-center -mt-8 shadow-lg"
+            >
+              <Ionicons name="add" size={30} color="white" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="items-center flex-1"
+              onPress={() => router.push("/topics")}
+            >
+              <Ionicons name="search-outline" size={24} color="#64748b" />
+              <Text className="text-xs text-slate-500">Explore</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="items-center flex-1"
+              onPress={() => router.push("/profile")}
+            >
+              <Ionicons name="person-outline" size={24} color="#64748b" />
+              <Text className="text-xs text-slate-500">Profile</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
@@ -205,11 +251,28 @@ export default function HomeScreen() {
         </View>
 
         <View className="px-6 mb-6">
+          <Text className={`${isDark ? "text-slate-100" : "text-slate-900"} text-lg font-bold mb-4`}>
+            Categories
+          </Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             className="flex-row"
           >
+            {["All", "Design", "Coding", "Writing", "Tech"].map(
+              (cat, index) => (
+                <TouchableOpacity
+                  key={index}
+                  className={`mr-3 px-5 py-2.5 rounded-xl ${index === 0 ? "bg-teal-600" : "bg-white border border-slate-200"}`}
+                >
+                  <Text
+                    className={`font-bold ${index === 0 ? "text-white" : "text-slate-500"}`}
+                  >
+                    {cat}
+                  </Text>
+                </TouchableOpacity>
+              ),
+            )}
           </ScrollView>
         </View>
 
