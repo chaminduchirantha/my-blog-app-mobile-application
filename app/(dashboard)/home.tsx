@@ -19,6 +19,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -31,6 +32,11 @@ export default function HomeScreen() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [likes, setLikes] = useState<{[key: string]: { count: number; liked: boolean };}>({});
   const user = auth.currentUser;
+  const systemTheme = useColorScheme();
+  
+  const [theme, setTheme] = useState(systemTheme || "light");
+  
+  const isDark = theme === "dark";
 
   useEffect(() => {
     const fetchPostsAndProfile = async () => {
@@ -151,13 +157,13 @@ export default function HomeScreen() {
 
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50">
-      <View className="px-6 py-4 flex-row justify-between items-center bg-white border-b border-slate-100">
+    <SafeAreaView className={`flex-1 ${isDark ? "bg-slate-900" : "bg-slate-100"}`}>
+      <View className={`px-6 py-4 flex-row justify-between items-center border-b border-slate-100${isDark ? "bg-slate-900" : "bg-slate-100"}`}>
         <View>
           <Text className="text-slate-500 text-xs font-bold tracking-widest">
             WELCOME BACK
           </Text>
-          <Text className="text-slate-900 text-xl font-black">
+          <Text className={`${isDark ? "text-slate-100" : "text-slate-900"} text-xl font-black`}>
             Hi, Dev User {userName} 👋
           </Text>
         </View>
@@ -173,11 +179,22 @@ export default function HomeScreen() {
             </Text>
           )}
         </TouchableOpacity>
+         <TouchableOpacity
+            onPress={() => setTheme(isDark ? "light" : "dark")}
+            // className="absolute right-6 top-6"
+          >
+            <Ionicons
+              name={isDark ? "sunny" : "moon"}
+              size={26}
+              color={isDark ? "#99a1af" : "#99a1af"}
+              style={{ opacity: 0.85 }}
+            />
+          </TouchableOpacity>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
         <View className="px-6 py-5">
-          <View className="flex-row items-center bg-white px-4 py-3 rounded-2xl border border-slate-200 shadow-sm shadow-slate-200">
+          <View className={`flex-row items-center ${isDark ? "bg-slate-800" : "bg-white"} px-4 py-3 rounded-2xl border border-slate-200 shadow-sm shadow-slate-200`}>
             <Feather name="search" size={20} color="#94a3b8" />
             <TextInput
               placeholder="Search creative posts..."
@@ -188,7 +205,7 @@ export default function HomeScreen() {
         </View>
 
         <View className="px-6 mb-6">
-          <Text className="text-slate-900 text-lg font-bold mb-4">
+          <Text className={`${isDark ? "text-slate-100" : "text-slate-900"} text-lg font-bold mb-4`}>
             Categories
           </Text>
           <ScrollView
@@ -218,23 +235,23 @@ export default function HomeScreen() {
             <TouchableOpacity
               key={post.id}
               activeOpacity={0.9}
-              className="bg-white  mb-5 overflow-hidden border border-slate-100 shadow-sm shadow-slate-200"
+              className={`${isDark ? "bg-slate-800" : "bg-white"} mb-5 overflow-hidden border border-slate-100 shadow-sm shadow-slate-200`}
             >
               <View className="flex-row items-center p-3">
-                <View className="w-10 h-10 bg-slate-200 rounded-full items-center justify-center">
-                  <Text className="text-slate-600 font-bold">
+                <View className={`w-10 h-10 ${isDark ? "bg-slate-700" : "bg-slate-200"} rounded-full items-center justify-center`}>
+                  <Text className={`${isDark ? "text-slate-100" : "text-slate-600"} font-bold`}>
                     {post.author?.charAt(0)}
                   </Text>
                 </View>
                 <View className="ml-3 flex-1">
-                  <Text className="text-slate-900 font-bold text-[15px]">
+                  <Text className={`${isDark ? "text-slate-100" : "text-slate-900"} font-bold text-[15px]`}>
                     {post.author}
                   </Text>
                   <View className="flex-row items-center">
-                    <Text className="text-slate-500 text-[12px]">
+                    <Text className={`${isDark ? "text-slate-400" : "text-slate-500"} text-[12px]`}>
                       {post.createdAt}
                     </Text>
-                    <Text className="text-slate-500 text-[12px] mx-1">•</Text>
+                    <Text className={`${isDark ? "text-slate-400" : "text-slate-500"} text-[12px] mx-1`}>•</Text>
                     <Ionicons name="earth" size={12} color="#64748b" />
                   </View>
                 </View>
@@ -271,11 +288,11 @@ export default function HomeScreen() {
                 </View>
 
                 <View className="px-3 pb-3">
-                  <Text className="text-slate-900 font-bold text-lg mb-1">
+                  <Text className={`${isDark ? "text-slate-100" : "text-slate-900"} font-bold text-lg mb-1`}>
                     {post.title}
                   </Text>
                   <Text
-                    className="text-slate-800 text-[14px] leading-5"
+                    className={`${isDark ? "text-slate-400" : "text-slate-800"} text-[14px] leading-5`}
                     numberOfLines={isExpanded ? undefined : 14}
                   >
                     {post.content}
@@ -293,7 +310,7 @@ export default function HomeScreen() {
                 </View>
 
                 <View className="flex-row justify-between items-center mt-2 pt-3 border-t border-slate-50">
-                  <View className="flex-row justify-between px-2 py-1 border-t border-slate-50">
+                  <View className="flex-row justify-between px-2 py-1">
                     <TouchableOpacity
                       className="flex-1 flex-row items-center justify-center py-2"
                       onPress={() => handleLike(post.id)}

@@ -34,6 +34,8 @@ export const addPost = async (
     content,
     imageBase64,
     userId: user.uid,
+    likesCount: 0,             
+    likedBy: [],
     createdAt: new Date().toISOString()
   })
 }
