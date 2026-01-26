@@ -1,10 +1,11 @@
 import { View, Text, Image, ScrollView, TouchableOpacity, TextInput, Modal, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { auth, db } from "@/services/firbase";
+import { auth, db,} from "@/services/firbase";
 import { useEffect, useState } from "react";
 import { router } from "expo-router";
-import { doc, getDoc ,query,collection,where,getDocs } from "firebase/firestore";
+import { doc, getDoc ,query,collection,where,getDocs, updateDoc } from "firebase/firestore";
 import { Ionicons } from "@expo/vector-icons";
+import { updateEmail, updateProfile } from "@firebase/auth";
 
 
 
@@ -19,6 +20,9 @@ export default function ProfileScreen() {
     const systemTheme = useColorScheme();
     const [theme, setTheme] = useState(systemTheme || "light");
     const isDark = theme === "dark";
+    const [newName, setNewName] = useState(userName);
+    const [newEmail, setNewEmail] = useState(user?.email || "");
+
 
     interface Post {
       id: string;
@@ -64,13 +68,38 @@ export default function ProfileScreen() {
       fetchProfile();
     }, [user]);
 
-    const handleSave = async () => {
+   const handleSave = async () => {
+      if (!user) return;
+
       try {
+        const userDocRef = doc(db, "users", user.uid);
+        await updateDoc(userDocRef, {
+          name: newName,
+          email: newEmail, 
+        });
+
+        await updateProfile(user, { displayName: newName });
+        if (newEmail !== user.email) {
+          await updateEmail(user, newEmail);
+        }
+
+        setUserName(newName);
+
         setModalVisible(false);
-      } catch (error) {
-        console.log(error);
+
+        alert("Profile updated successfully!");
+      } catch (error: any) {
+        console.log("Error updating profile:", error);
+        alert(error.message);
       }
     };
+
+    const openEditModal = () => {
+      setNewName(userName);
+      setNewEmail(user?.email || "");
+      setModalVisible(true);
+    };
+
   return (
     <SafeAreaView className={`flex-1 ${isDark ? "bg-slate-900" : "bg-white"}`}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -226,7 +255,7 @@ export default function ProfileScreen() {
         <View className={`flex-1 justify-center px-6 ${isDark ? "bg-black/70" : "bg-black/50"}`}>
           <View className={`rounded-2xl p-6 ${isDark ? "bg-slate-800" : "bg-white"}`}>
 
-            <Text className={`text-lg font-bold mb-4 ${isDark ? "text-white" : "text-black"}`}>
+            <Text className={`text-lg font-bold mb-4 ${isDark ? "text-white" : "text-black"}`} onPress={openEditModal}>
               Edit Profile
             </Text>
 
@@ -238,6 +267,8 @@ export default function ProfileScreen() {
               placeholder="Enter your new name"
               placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
               className={`border rounded-xl px-4 py-3 mb-4 ${isDark ? "bg-slate-700 border-slate-600 text-white" : "bg-white border-gray-300 text-black"}`}
+              value={newName}
+              onChangeText={setNewName}
             />
 
             <Text className={`text-sm mb-2 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
@@ -248,6 +279,8 @@ export default function ProfileScreen() {
               placeholder="Enter your New email"
               placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
               className={`border rounded-xl px-4 py-3 mb-4 ${isDark ? "bg-slate-700 border-slate-600 text-white" : "bg-white border-gray-300 text-black"}`}
+              value={newEmail}
+              onChangeText={setNewEmail}
             />
 
             <View className="flex-row justify-end gap-3">
@@ -260,7 +293,7 @@ export default function ProfileScreen() {
               </TouchableOpacity>
 
               <TouchableOpacity
-                className="bg-teal-600 px-5 py-2 rounded-xl"
+                className="bg-teal-600 px-5 py-2 rounded-xl" onPress={handleSave}
               >
                 <Text className="text-white font-semibold">
                   Save

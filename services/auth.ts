@@ -6,10 +6,10 @@ import {
   signInWithCredential,
   signInWithEmailAndPassword,
   signOut,
-  updateProfile,
+  updateProfile ,updateEmail
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { auth, db } from "./firbase";
+import { doc, setDoc, updateDoc} from "firebase/firestore";
+import { auth, db} from "./firbase";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -90,6 +90,36 @@ export const signOutUser = async () => {
     await signOut(auth);
   } catch (error) {
     console.error("Error signing out:", error);
+    throw error;
+  }
+};
+
+
+export const updateUserProfile = async (
+  newName: string,
+  newEmail?: string,
+) => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("User not authenticated");
+
+  try {
+    await updateProfile(user, {
+      displayName: newName,
+    });
+
+    if (newEmail && newEmail !== user.email) {
+      await updateEmail(user, newEmail);
+    }
+
+    const userDocRef = doc(db, "users", user.uid);
+    await updateDoc(userDocRef, {
+      name: newName,
+      email: newEmail || user.email,
+    });
+
+    return user;
+  } catch (error: any) {
+    console.error("Error updating profile:", error);
     throw error;
   }
 };
