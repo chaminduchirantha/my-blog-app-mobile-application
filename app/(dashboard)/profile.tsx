@@ -1,9 +1,10 @@
-import { View, Text, Image, ScrollView, TouchableOpacity, TextInput, Modal } from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity, TextInput, Modal, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { auth, db } from "@/services/firbase";
 import { useEffect, useState } from "react";
 import { router } from "expo-router";
 import { doc, getDoc ,query,collection,where,getDocs } from "firebase/firestore";
+import { Ionicons } from "@expo/vector-icons";
 
 
 
@@ -14,6 +15,10 @@ export default function ProfileScreen() {
     const [profileImage, setProfileImage] = useState<string | null>(null);
     const [postCount, setPostCount] = useState(0);
     const [myPosts, setMyPosts] = useState<Post[]>([]);
+    const [userName, setUserName] = useState("User");
+    const systemTheme = useColorScheme();
+    const [theme, setTheme] = useState(systemTheme || "light");
+    const isDark = theme === "dark";
 
     interface Post {
       id: string;
@@ -23,6 +28,8 @@ export default function ProfileScreen() {
       imageBase64?: string | null;
     }
 
+    
+
     useEffect(() => {
       const fetchProfile = async () => {
         if (!user) return;
@@ -31,6 +38,7 @@ export default function ProfileScreen() {
         if (docSnap.exists()) {
           const data = docSnap.data();
           setProfileImage(data.photoURL || null);
+          setUserName(data.name || "User");
         }
 
         try {
@@ -64,8 +72,41 @@ export default function ProfileScreen() {
       }
     };
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className={`flex-1 ${isDark ? "bg-slate-900" : "bg-white"}`}>
       <ScrollView showsVerticalScrollIndicator={false}>
+        <View className={`pt-12 pb-4 ${isDark ? "bg-slate-950" : "bg-slate-50"}`}>
+                
+          <View className="px-6 flex-row justify-between items-center mb-6">
+            <View>
+              <Text className="text-teal-500 text-[10px] font-black tracking-[2px]">HELLO</Text>
+              <Text className={`${isDark ? "text-white" : "text-slate-900"} text-xl font-bold`}>
+                {userName} 👋
+              </Text>
+            </View>
+
+            <View className="flex-row items-center gap-x-3">
+              <TouchableOpacity
+                onPress={() => setTheme(isDark ? "light" : "dark")}
+                className={`p-2.5 rounded-2xl ${isDark ? "bg-slate-900 border border-slate-800" : "bg-white border border-slate-200"}`}
+              >
+                <Ionicons name={isDark ? "sunny" : "moon"} size={20} color={isDark ? "#fbbf24" : "#64748b"} />
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                className="w-11 h-11 rounded-2xl border-2 border-teal-500/20 overflow-hidden"
+                onPress={() => router.push("/profile")}
+              >
+                {profileImage ? (
+                  <Image source={{ uri: profileImage }} className="w-full h-full" />
+                ) : (
+                  <View className="bg-teal-500 w-full h-full items-center justify-center">
+                    <Text className="text-white font-bold">{userName.charAt(0)}</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
 
         <View className="items-center mt-8">
           {profileImage && (
@@ -74,10 +115,10 @@ export default function ProfileScreen() {
               className="w-32 h-32 rounded-full"
             />
           )}
-          <Text className="text-xl font-bold mt-4">
+          <Text className={`text-xl font-bold mt-4 ${isDark ? "text-white" : "text-black"}`}>
             {user?.displayName || "No Name"}
           </Text>
-          <Text className="text-gray-500 text-sm mt-1">
+          <Text className={`text-sm mt-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
             {user?.email} | Blogger ✍️
           </Text>
         </View>
@@ -85,8 +126,8 @@ export default function ProfileScreen() {
 
         <View className="flex-row justify-around mt-8">
           <View className="items-center">
-            <Text className="text-lg font-bold">{postCount}</Text>
-            <Text className="text-gray-500 text-sm">Post count</Text>
+            <Text className={`text-lg font-bold ${isDark ? "text-white" : "text-black"}`}>{postCount}</Text>
+            <Text className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>Post count</Text>
           </View>
         </View>
 
@@ -105,11 +146,11 @@ export default function ProfileScreen() {
         </View>
 
         <View className="px-5 mt-10">
-          <Text className="text-lg font-bold mb-4">My Posts</Text>
+          <Text className={`text-lg font-bold mb-4 ${isDark ? "text-white" : "text-black"}`}>My Posts</Text>
 
           {myPosts.length > 0 ? (
             myPosts.map((post) => (
-              <View key={post.id} className="bg-gray-100 p-4 rounded-xl mb-3 shadow-sm">
+              <View key={post.id} className={`p-4 rounded-xl mb-3 shadow-sm ${isDark ? "bg-slate-800" : "bg-gray-100"}`}>
 
                 {post.imageBase64 ? (
                   <Image
@@ -122,23 +163,23 @@ export default function ProfileScreen() {
                     resizeMode="cover"
                   />
                 ) : (
-                  <View className="w-20 h-20 bg-slate-200 rounded-2xl items-center justify-center">
-                    <Text className="text-[10px] text-slate-400">No image </Text>
+                  <View className={`w-20 h-20 rounded-2xl items-center justify-center ${isDark ? "bg-slate-700" : "bg-slate-200"}`}>
+                    <Text className={`text-[10px] ${isDark ? "text-slate-500" : "text-slate-400"}`}>No image </Text>
                   </View>
                 )}
-                <Text className="font-semibold text-base text-slate-800">
+                <Text className={`font-semibold text-base ${isDark ? "text-slate-100" : "text-slate-800"}`}>
                   {post.title}
                 </Text>
-                <Text className="font-semibold text-base text-slate-800">
+                <Text className={`font-semibold text-base ${isDark ? "text-slate-100" : "text-slate-800"}`}>
                   {post.content}
                 </Text>
-                <Text className="text-gray-500 text-xs mt-1">
+                <Text className={`text-xs mt-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                   {post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString() : "Just now"}
                 </Text>
               </View>
             ))
           ) : (
-            <Text className="text-gray-400 text-center mt-4 italic">
+            <Text className={`text-center mt-4 italic ${isDark ? "text-gray-500" : "text-gray-400"}`}>
               You haven't posted anything yet.
             </Text>
           )}
@@ -146,41 +187,74 @@ export default function ProfileScreen() {
 
       </ScrollView>
 
+      <View className="absolute bottom-6 left-4 right-4">
+        <View className={`flex-row items-center justify-around py-3 rounded-3xl shadow-xl border ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-100"}`}>
+          <TouchableOpacity className="items-center px-4" onPress={() => router.push("/home")}>
+            <Ionicons name="home-outline" size={24} color={isDark ? "#94a3b8" : "#64748b"} />
+            <Text className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}>Home</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity className="items-center px-4" onPress={() => router.push("/bookmarks")}>
+            <Ionicons name="bookmark-outline" size={24} color={isDark ? "#94a3b8" : "#64748b"} />
+            <Text className={`text-[10px] font-bold mt-1 ${isDark ? "text-slate-400" : "text-slate-600"}`}>Saved</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={() => router.push("/create")}
+            className={`w-14 h-14 bg-teal-600 rounded-full items-center justify-center -mt-10 shadow-lg ${isDark ? "border border-slate-950" : ""}`}
+          >
+            <Ionicons name="add" size={32} color="white" />
+          </TouchableOpacity>
+
+          <TouchableOpacity className="items-center px-4" onPress={() => router.push("/topics")}>
+            <Ionicons name="search-outline" size={24} color={isDark ? "#94a3b8" : "#64748b"} />
+            <Text className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}>Explore</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity className="items-center px-4" onPress={() => router.push("/profile")}>
+            <Ionicons name="person-outline" size={24} color={isDark ? "#94a3b8" : "#64748b"} />
+            <Text className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}>Profile</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
       <Modal
         visible={modalVisible}
         animationType="slide"
         transparent
       >
-        <View className="flex-1 bg-black/50 justify-center px-6">
-          <View className="bg-white rounded-2xl p-6">
+        <View className={`flex-1 justify-center px-6 ${isDark ? "bg-black/70" : "bg-black/50"}`}>
+          <View className={`rounded-2xl p-6 ${isDark ? "bg-slate-800" : "bg-white"}`}>
 
-            <Text className="text-lg font-bold mb-4">
+            <Text className={`text-lg font-bold mb-4 ${isDark ? "text-white" : "text-black"}`}>
               Edit Profile
             </Text>
 
-            <Text className="text-sm text-gray-500 mb-2">
+            <Text className={`text-sm mb-2 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
               Name
             </Text>
 
             <TextInput
               placeholder="Enter your new name"
-              className="border border-gray-300 rounded-xl px-4 py-3 mb-4"
+              placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+              className={`border rounded-xl px-4 py-3 mb-4 ${isDark ? "bg-slate-700 border-slate-600 text-white" : "bg-white border-gray-300 text-black"}`}
             />
 
-            <Text className="text-sm text-gray-500 mb-2">
+            <Text className={`text-sm mb-2 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
               email
             </Text>
 
             <TextInput
               placeholder="Enter your New email"
-              className="border border-gray-300 rounded-xl px-4 py-3 mb-4"
+              placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+              className={`border rounded-xl px-4 py-3 mb-4 ${isDark ? "bg-slate-700 border-slate-600 text-white" : "bg-white border-gray-300 text-black"}`}
             />
 
             <View className="flex-row justify-end gap-3">
               <TouchableOpacity
                 className="px-4 py-2"
               >
-                <Text className="text-gray-500 font-semibold" onPress={() => setModalVisible(false)}>
+                <Text className={`font-semibold ${isDark ? "text-gray-400" : "text-gray-500"}`} onPress={() => setModalVisible(false)}>
                   Cancel
                 </Text>
               </TouchableOpacity>
