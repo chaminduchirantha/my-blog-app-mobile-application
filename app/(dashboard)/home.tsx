@@ -33,6 +33,8 @@ export default function HomeScreen() {
   const [likes, setLikes] = useState<{[key: string]: { count: number; liked: boolean };}>({});
   const user = auth.currentUser;
   const systemTheme = useColorScheme();
+  const [bookmarks, setBookmarks] = useState<{[key: string]: { saved: boolean , count: number };}>({});
+
   
   const [theme, setTheme] = useState(systemTheme || "light");
   
@@ -72,8 +74,8 @@ export default function HomeScreen() {
           setProfileImage(user.photoURL || null);
         }
 
-        // Fetch likes for all posts
         await fetchLikesForPosts(postsData);
+        await fetchBookmarksForPosts(postsData);
       } catch (error) {
         console.log("Error loading home data:", error);
       }
@@ -120,6 +122,46 @@ export default function HomeScreen() {
     }
   };
 
+  const fetchBookmarksForPosts = async (postsData: any[]) => {
+    try {
+      if (!user) return;
+
+      const bookmarkData: { [key: string]: { saved: boolean; count: number } } = {};
+
+      for (const post of postsData) {
+        const bookmarksRef = collection(
+          db,
+          "posts",
+          post.id,
+          "bookmarks"
+        );
+
+        const bookmarksSnap = await getDocs(bookmarksRef);
+
+        const userBookmarkRef = doc(
+          db,
+          "posts",
+          post.id,
+          "bookmarks",
+          user.uid
+        );
+
+        const userBookmarkSnap = await getDoc(userBookmarkRef);
+
+        bookmarkData[post.id] = {
+          saved: userBookmarkSnap.exists(),
+          count: bookmarksSnap.size, 
+        };
+      }
+
+      setBookmarks(bookmarkData);
+    } catch (error) {
+      console.log("Error fetching bookmarks:", error);
+    }
+  };
+
+
+
   const handleLike = async (postId: string) => {
     try {
       if (!user) {
@@ -154,6 +196,49 @@ export default function HomeScreen() {
       console.log("Error handling like:", error);
     }
   };
+
+  
+  const handleBookmark = async (postId: string) => {
+    try {
+      if (!user) return;
+
+      const bookmarkRef = doc(
+        db,
+        "posts",
+        postId,
+        "bookmarks",
+        user.uid
+      );
+
+      const isSaved = bookmarks[postId]?.saved;
+
+      if (isSaved) {
+        await deleteDoc(bookmarkRef); 
+      } else {
+        await setDoc(bookmarkRef, {
+          userId: user.uid,
+          savedAt: Timestamp.now(),
+        });
+      }
+
+      setBookmarks((prev) => {
+      const postBookmark = prev[postId];
+
+      return {
+          ...prev,
+          [postId]: {
+            saved: !isSaved,
+            count: isSaved
+              ? postBookmark.count - 1
+              : postBookmark.count + 1,
+          },
+        };
+      });
+    } catch (error) {
+      console.log("Error handling bookmark:", error);
+    }
+  };
+
 
 
   return (
@@ -374,14 +459,14 @@ export default function HomeScreen() {
                         {likes[post.id]?.count || 0}
                       </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity className="flex-1 flex-row items-center justify-center py-2">
+                    <TouchableOpacity className="flex-1 flex-row items-center justify-center py-2" onPress={() => handleBookmark(post.id)}>
                       <Ionicons
-                        name="bookmark-outline"
+                        name={bookmarks[post.id]?.saved ? "bookmark" : "bookmark-outline"}
                         size={20}
-                        color="#64748b"
+                        color={bookmarks[post.id]?.saved ? "#10b981" : "#64748b"}
                       />
                       <Text className="ml-2 text-slate-500 font-semibold">
-                        save
+                         {bookmarks[post.id]?.count || 0}
                       </Text>
                     </TouchableOpacity>
                   </View>
