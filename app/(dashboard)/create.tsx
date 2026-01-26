@@ -147,9 +147,6 @@ export default function CreatePostScreen() {
 
   return (
     <SafeAreaView className={`flex-1 ${isDark ? "bg-slate-950" : "bg-white"}`}>
-
-      
-
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
         <View className={`pt-12 pb-4 ${isDark ? "bg-slate-950" : "bg-slate-50"}`}>
         
@@ -183,56 +180,8 @@ export default function CreatePostScreen() {
               </TouchableOpacity>
             </View>
           </View>
-
-          <View className="px-4 mb-6">
-            <View
-              className={`flex-row items-center justify-between px-0 py-4 rounded-2xl
-              ${isDark ? "bg-slate-900" : "bg-slate-200/50"}`}
-            >
-              <TouchableOpacity
-                className="items-center flex-1"
-                onPress={() => router.push("/home")}
-              >
-                <Ionicons name="home" size={24} color="#10b981" />
-                <Text className="text-xs text-slate-500">Home</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                className="items-center flex-1"
-                onPress={() => router.push("/bookmarks")}
-              >
-                <Ionicons name="bookmark-outline" size={24} color="#64748b" />
-                <Text className="text-xs text-slate-500">Saved</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => router.push("/create")}
-                className="w-14 h-14 bg-teal-600 rounded-full items-center justify-center -mt-8 shadow-lg"
-              >
-                <Ionicons name="add" size={30} color="white" />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                className="items-center flex-1"
-                onPress={() => router.push("/topics")}
-              >
-                <Ionicons name="search-outline" size={24} color="#64748b" />
-                <Text className="text-xs text-slate-500">Explore</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                className="items-center flex-1"
-                onPress={() => router.push("/profile")}
-              >
-                <Ionicons name="person-outline" size={24} color="#64748b" />
-                <Text className="text-xs text-slate-500">Profile</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
         </View>
         
-        
-
         <View className="px-6 mb-6">
           <Text className="text-slate-400 text-xs font-black tracking-widest uppercase mb-6 ml-1">
             Select Category
@@ -297,44 +246,76 @@ export default function CreatePostScreen() {
           </View>
 
           <View className="px-6 py-6">
-          <TouchableOpacity 
-            onPress={pickImage} 
-            activeOpacity={0.7}
-            className={`w-full h-52 ${isDark ? "bg-slate-900" : "bg-slate-50"} rounded-[30px] ${isDark ? "border border-slate-700" : "border border-black"} border-dashed items-center justify-center overflow-hidden`}
-          >
-            {image ? (
-              <Image source={{ uri: image }} className="w-full h-full" />
-            ) : (
-              <View className="items-center">
-                <View className="bg-white p-4 rounded-full shadow-sm mb-2">
-                  <Feather name="image" size={28} color="#0d9488" />
+            <TouchableOpacity 
+              onPress={pickImage} 
+              activeOpacity={0.7}
+              className={`w-full h-52 ${isDark ? "bg-slate-900" : "bg-slate-50"} rounded-[30px] ${isDark ? "border border-slate-700" : "border border-black"} border-dashed items-center justify-center overflow-hidden`}
+            >
+              {image ? (
+                <Image source={{ uri: image }} className="w-full h-full" />
+              ) : (
+                <View className="items-center">
+                  <View className="bg-white p-4 rounded-full shadow-sm mb-2">
+                    <Feather name="image" size={28} color="#0d9488" />
+                  </View>
+                  <Text className="text-slate-400 font-bold">Add Cover Photo</Text>
                 </View>
-                <Text className="text-slate-400 font-bold">Add Cover Photo</Text>
-              </View>
-            )}
-            {image && (
-              <View className="absolute bottom-3 right-3 bg-black/50 p-2 rounded-full">
-                <Feather name="edit-2" size={16} color="white" />
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
+              )}
+              {image && (
+                <View className="absolute bottom-3 right-3 bg-black/50 p-2 rounded-full">
+                  <Feather name="edit-2" size={16} color="white" />
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
 
-        <View className={`px-6 py-4 flex-row justify-between items-center border-b
-          ${isDark 
-            ? "bg-slate-950 border-slate-800" 
-            : "bg-white border-slate-100"
-          }`}>
-        <View>
-          <Text className={`${isDark ? "text-slate-500" : "text-slate-400"} text-xs font-bold tracking-widest uppercase`}>Draft</Text>
-          <Text className="text-slate-900 text-xl font-black">New Story</Text>
-        </View>
-        <TouchableOpacity className="bg-teal-600 px-5 py-2 rounded-full shadow-sm" onPress={handlePublish}>
-          <Text className={`${isDark ? "text-white" : "text-white"} font-bold text-sm`}>Publish and view</Text>
-        </TouchableOpacity>
-      </View>
+          <View className={`px-6 py-4 flex-row justify-between items-center border-b
+            ${isDark 
+              ? "bg-slate-950 border-slate-800" 
+              : "bg-white border-slate-100"
+            }`}>
+            <View>
+              <Text className={`${isDark ? "text-slate-500" : "text-slate-400"} text-xs font-bold tracking-widest uppercase`}>Draft</Text>
+              <Text className={`${isDark ? "text-white" : "text-slate-900"} text-xl font-black`}>New Story</Text>
+            </View>
+            <TouchableOpacity className="bg-teal-600 px-5 py-2 rounded-full shadow-sm" onPress={handlePublish}>
+              <Text className="text-white font-bold text-sm">Publish and view</Text>
+            </TouchableOpacity>
+          </View>
         </View> 
       </ScrollView>
+
+
+     <View className="absolute bottom-6 left-4 right-4">
+        <View className={`${isDark ? "bg-slate-900" : "bg-white"} flex-row items-center justify-around py-3 rounded-3xl shadow-xl border ${isDark ? "border-slate-800" : "border-slate-100"}`}>
+          <TouchableOpacity className="items-center px-4" onPress={() => router.push("/home")}>
+            <Ionicons name="home-outline" size={24} color="#64748b" />
+            <Text className="text-[10px] text-slate-500 mt-1">Home</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity className="items-center px-4" onPress={() => router.push("/bookmarks")}>
+            <Ionicons name="bookmark-outline" size={24} color="#64748b" />
+            <Text className="text-[10px] text-slate-600 font-bold mt-1">Saved</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={() => router.push("/create")}
+            className="w-14 h-14 bg-teal-600 rounded-full items-center justify-center -mt-10 shadow-lg dark:border-slate-950"
+          >
+            <Ionicons name="add" size={32} color="white" />
+          </TouchableOpacity>
+
+          <TouchableOpacity className="items-center px-4" onPress={() => router.push("/topics")}>
+            <Ionicons name="search-outline" size={24} color="#64748b" />
+            <Text className="text-[10px] text-slate-500 mt-1">Explore</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity className="items-center px-4" onPress={() => router.push("/profile")}>
+            <Ionicons name="person-outline" size={24} color="#64748b" />
+            <Text className="text-[10px] text-slate-500 mt-1">Profile</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
