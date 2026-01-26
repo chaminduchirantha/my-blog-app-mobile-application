@@ -9,6 +9,8 @@ import {
   getDocs,
   orderBy,
   query,
+  setDoc,
+  Timestamp,
   updateDoc,
   where
 } from 'firebase/firestore'
@@ -129,3 +131,20 @@ export const deletePost = async (id: string) => {
 
   await deleteDoc(ref)
 }
+
+export const addBookmarkToPost = async (postId: string) => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("User not authenticated.");
+
+  await setDoc(doc(db, "users", user.uid, "bookmarks", postId), {
+    createdAt: Timestamp.now(),
+  });
+};
+
+// Remove a bookmark for a post
+export const removeBookmarkFromPost = async (postId: string) => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("User not authenticated.");
+
+  await deleteDoc(doc(db, "users", user.uid, "bookmarks", postId));
+};
