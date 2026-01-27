@@ -64,8 +64,12 @@ export default function HomeScreen() {
 
         if (userSnap.exists()) {
           const data = userSnap.data();
-          if (data.photoURL) {
-            setProfileImage(data.photoURL);
+          if (data.profileImageBase64) {
+            setProfileImage(
+              data.profileImageBase64.startsWith("data:image")
+                ? data.profileImageBase64
+                : `data:image/jpeg;base64,${data.profileImageBase64}`
+            );
           } else if (user.photoURL) {
             setProfileImage(user.photoURL);
           } else {
