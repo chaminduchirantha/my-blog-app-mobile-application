@@ -94,7 +94,7 @@ export const getPostById = async (id: string) => {
 export const updatePost = async (
   id: string,
   title: string,
-  author: string,
+  // author: string,
   category: string,
   content: string,
   imageBase64?: string | null
@@ -112,7 +112,7 @@ export const updatePost = async (
 
   await updateDoc(ref, {
     title,
-    author,
+    // author,
     category,
     content,
     imageBase64: imageBase64 ?? data.imageBase64

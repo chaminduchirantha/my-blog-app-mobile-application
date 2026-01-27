@@ -1,4 +1,5 @@
 import { auth, db } from "@/services/firbase";
+import { deletePost, updatePost } from "@/services/postService";
 import { Ionicons } from "@expo/vector-icons";
 import { updateEmail, updateProfile } from "@firebase/auth";
 import * as ImagePicker from "expo-image-picker";
@@ -14,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import {
+  Alert,
   Image,
   Modal,
   ScrollView,
@@ -39,6 +41,11 @@ export default function ProfileScreen() {
   const [newName, setNewName] = useState(userName);
   const [newEmail, setNewEmail] = useState(user?.email || "");
   const [newProfileImage, setNewProfileImage] = useState<string | null>(null);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editContent, setEditContent] = useState("");
+  const [editCategory, setEditCategory] = useState("");
 
   interface Post {
     id: string;
@@ -46,6 +53,7 @@ export default function ProfileScreen() {
     content: string;
     createdAt?: any;
     imageBase64?: string | null;
+    category?: string;
   }
 
   useEffect(() => {
@@ -139,6 +147,14 @@ export default function ProfileScreen() {
     setModalVisible(true);
   };
 
+  const openEditPostModal = (post: Post) => {
+    setSelectedPost(post);
+    setEditTitle(post.title);
+    setEditContent(post.content);
+    setEditCategory(post.category || "");
+    setEditModalVisible(true);
+  };
+
   const pickProfileImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: "images",
@@ -151,6 +167,48 @@ export default function ProfileScreen() {
     if (!result.canceled && result.assets[0].base64) {
       setNewProfileImage(result.assets[0].base64);
     }
+  };
+
+  const handleUpdatePost = async () => {
+    if (!selectedPost) return;
+
+    await updatePost(
+      selectedPost.id,
+      editTitle,
+      // "author",/
+      editCategory,
+      editContent,
+      
+    );
+
+    setMyPosts((prev) =>
+      prev.map((p) =>
+        p.id === selectedPost.id
+          ? { ...p, title: editTitle, content: editContent, category: editCategory }
+          : p
+      )
+    );
+    alert("Post updated successfully!");
+
+    setEditModalVisible(false);
+  };
+
+
+  const handleDeletePost = (postId: string) => {
+    Alert.alert("Delete Post","Are you sure?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            await deletePost(postId);
+            setMyPosts((prev) => prev.filter((p) => p.id !== postId));
+            setPostCount((c) => c - 1);
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -194,10 +252,10 @@ export default function ProfileScreen() {
                   />
                 ) : (
                   <View className="bg-teal-500 w-full h-full items-center justify-center">
-                      <Text className="text-white font-bold">
-                        {userName?.charAt(0) || "U"}
-                      </Text>
-                    </View>
+                    <Text className="text-white font-bold">
+                      {userName?.charAt(0) || "U"}
+                    </Text>
+                  </View>
                 )}
               </TouchableOpacity>
             </View>
@@ -288,6 +346,19 @@ export default function ProfileScreen() {
                     </Text>
                   </View>
                 )}
+                <View className="absolute top-2 right-2 flex-row gap-3 z-10">
+
+                  {/* UPDATE */}
+                  <TouchableOpacity onPress={() => openEditPostModal(post)}>
+                    <Ionicons name="create" size={25} color="#22c55e" />
+                  </TouchableOpacity>
+
+                  {/* DELETE */}
+                  <TouchableOpacity onPress={() => alert(handleDeletePost(post.id))}>
+                    <Ionicons name="trash" size={24} color="#ef4444" />
+                  </TouchableOpacity>
+
+                </View>
                 <Text
                   className={`font-semibold text-base ${isDark ? "text-slate-100" : "text-slate-800"}`}
                 >
@@ -455,10 +526,10 @@ export default function ProfileScreen() {
                 />
               ) : (
                 <View className="w-24 h-24 rounded-full bg-teal-500 items-center justify-center">
-                    <Text className="text-white font-bold">
-                      {userName?.charAt(0) || "U"}
-                    </Text>
-                  </View>
+                  <Text className="text-white font-bold">
+                    {userName?.charAt(0) || "U"}
+                  </Text>
+                </View>
               )}
 
               <Text className="text-teal-500 mt-2 text-sm">Change Photo</Text>
@@ -484,6 +555,52 @@ export default function ProfileScreen() {
           </View>
         </View>
       </Modal>
+
+      <Modal visible={editModalVisible} transparent animationType="slide">
+        <View className="flex-1 justify-center bg-black/60 px-6">
+          <View className="bg-white rounded-2xl p-5">
+
+            <Text className="text-lg font-bold mb-4">Update Post</Text>
+
+            <TextInput
+              value={editTitle}
+              onChangeText={setEditTitle}
+              placeholder="Title"
+              className="border rounded-xl px-4 py-2 mb-3"
+            />
+
+            <TextInput
+              value={editCategory}
+              onChangeText={setEditCategory}
+              placeholder="Category"
+              className="border rounded-xl px-4 py-2 mb-3"
+            />
+
+            <TextInput
+              value={editContent}
+              onChangeText={setEditContent}
+              placeholder="Content"
+              multiline
+              className="border rounded-xl px-4 py-2 h-28 mb-4"
+            />
+
+            <View className="flex-row justify-end gap-3">
+              <TouchableOpacity onPress={() => setEditModalVisible(false)}>
+                <Text className="text-gray-500">Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="bg-teal-600 px-5 py-2 rounded-xl"
+                onPress={handleUpdatePost}
+              >
+                <Text className="text-white font-semibold">Update</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+        </View>
+      </Modal>
+
     </SafeAreaView>
   );
 }
