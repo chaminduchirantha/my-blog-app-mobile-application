@@ -1,4 +1,3 @@
-import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
 import {
   createUserWithEmailAndPassword,
@@ -6,10 +5,11 @@ import {
   signInWithCredential,
   signInWithEmailAndPassword,
   signOut,
-  updateProfile ,updateEmail
+  updateEmail,
+  updateProfile,
 } from "firebase/auth";
-import { doc, setDoc, updateDoc} from "firebase/firestore";
-import { auth, db} from "./firbase";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { auth, db } from "./firbase";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -27,21 +27,27 @@ export const registerUser = async (
     );
     const user = userCredential.user;
 
-    const photoURL = profileImageBase64
-      ? `data:image/jpeg;base64,${profileImageBase64}`
-      : "";
+    const photoURL = "https://via.placeholder.com/150";
 
     await updateProfile(user, {
       displayName: fullname,
+      photoURL: photoURL,
     });
 
-    await setDoc(doc(db, "users", user.uid), {
+    const userData: any = {
       uid: user.uid,
       name: fullname,
       role: "user",
       photoURL: photoURL,
       createdAt: new Date(),
-    });
+    };
+
+    // Store base64 image separately if provided
+    if (profileImageBase64) {
+      userData.profileImageBase64 = profileImageBase64;
+    }
+
+    await setDoc(doc(db, "users", user.uid), userData);
 
     return user;
   } catch (error) {
@@ -75,7 +81,7 @@ export const firebaseGoogleLogin = async (idToken: string) => {
         photoURL: user.photoURL || "",
         createdAt: new Date(),
       },
-      { merge: true }
+      { merge: true },
     );
 
     return userCredential;
@@ -94,17 +100,22 @@ export const signOutUser = async () => {
   }
 };
 
-
 export const updateUserProfile = async (
   newName: string,
   newEmail?: string,
+  newProfileImageBase64?: string,
 ) => {
   const user = auth.currentUser;
   if (!user) throw new Error("User not authenticated");
 
   try {
+    const photoURL = newProfileImageBase64
+      ? `data:image/jpeg;base64,${newProfileImageBase64}`
+      : user.photoURL || "";
+
     await updateProfile(user, {
       displayName: newName,
+      photoURL: photoURL,
     });
 
     if (newEmail && newEmail !== user.email) {
@@ -115,6 +126,7 @@ export const updateUserProfile = async (
     await updateDoc(userDocRef, {
       name: newName,
       email: newEmail || user.email,
+      photoURL: photoURL,
     });
 
     return user;
