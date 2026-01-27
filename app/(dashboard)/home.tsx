@@ -23,6 +23,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 export default function HomeScreen() {
   const router = useRouter();
 
@@ -247,7 +248,7 @@ export default function HomeScreen() {
         
         <View className="px-6 flex-row justify-between items-center mb-6">
           <View>
-            <Text className="text-teal-500 text-[10px] font-black tracking-[2px]">HELLO</Text>
+            <Text className="text-teal-500 text-[10px] font-black tracking-[2px]">HELLO WELLCOME</Text>
             <Text className={`${isDark ? "text-white" : "text-slate-900"} text-xl font-bold`}>
               {userName} 👋
             </Text>
@@ -348,11 +349,23 @@ export default function HomeScreen() {
               (cat, index) => (
                 <TouchableOpacity
                   key={index}
-                  className={`mr-3 px-5 py-2.5 rounded-xl ${index === 0 ? "bg-teal-600" : "bg-white border border-slate-200"}`}
-                >
+                  className={`mr-3 px-5 py-2.5 rounded-xl ${
+                    index === 0
+                      ? "bg-teal-600"
+                      : isDark
+                      ? "bg-slate-800 border border-slate-700"
+                      : "bg-white border border-slate-200"
+                    }
+                  `}>
                   <Text
-                    className={`font-bold ${index === 0 ? "text-white" : "text-slate-500"}`}
-                  >
+                    className={`font-bold ${
+                      index === 0
+                        ? "text-white"
+                        : isDark
+                        ? "text-slate-300"
+                        : "text-slate-500"
+                      }
+                    `}>
                     {cat}
                   </Text>
                 </TouchableOpacity>
@@ -366,7 +379,7 @@ export default function HomeScreen() {
             <TouchableOpacity
               key={post.id}
               activeOpacity={0.9}
-              className={`${isDark ? "bg-slate-800" : "bg-white"} mb-5 overflow-hidden  shadow-sm shadow-slate-200`}
+              className={`${isDark ? "bg-slate-800" : "bg-white"} mb-5 overflow-hidden rounded-2xl shadow-sm shadow-slate-200`}
             >
               <View className="flex-row items-center p-3">
                 <View className={`w-10 h-10 ${isDark ? "bg-slate-700" : "bg-slate-200"} rounded-full items-center justify-center`}>
@@ -406,7 +419,7 @@ export default function HomeScreen() {
               />
 
               <View className="p-4">
-                <View className="flex-row justify-between items-center mb-2">
+                <View className="flex-row justify-between items-center mb-8">
                   <View className="bg-teal-50 px-3 py-1 rounded-lg">
                     <Text className="text-teal-600 text-[10px] font-black uppercase">
                       {post.category}
@@ -419,11 +432,11 @@ export default function HomeScreen() {
                 </View>
 
                 <View className="px-3 pb-3">
-                  <Text className={`${isDark ? "text-slate-100" : "text-slate-900"} font-bold text-lg mb-1`}>
+                  <Text className={`${isDark ? "text-slate-100" : "text-slate-900"} font-bold text-2xl font-serif  mb-1`}>
                     {post.title}
                   </Text>
                   <Text
-                    className={`${isDark ? "text-slate-400" : "text-slate-800"} text-[14px] leading-5`}
+                    className={`${isDark ? "text-slate-100" : "text-slate-800"} text-[14px] font-serif leading-5`}
                     numberOfLines={isExpanded ? undefined : 14}
                   >
                     {post.content}
