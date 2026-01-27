@@ -21,6 +21,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -43,17 +44,32 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Please enter email and password");
+      Toast.show({
+        type: "error",
+        text1: "Missing details",
+        text2: "Please enter email and password",
+      });
+
       return;
     }
     setIsLoading(true);
     try {
       await loginUser(email, password);
-      Alert.alert("Login successful!");
+      Toast.show({
+        type: "success",
+        text1: "Login successful 🎉",
+        text2: "Welcome back!",
+      });
       router.replace("/home");
+
     } catch (e) {
       console.error(e);
-      Alert.alert("Login failed. Please check your credentials and try again.");
+      Toast.show({
+        type: "error",
+        text1: "Login failed",
+        text2: "Please check your credentials",
+      });
+
     } finally {
       setIsLoading(false);
     }

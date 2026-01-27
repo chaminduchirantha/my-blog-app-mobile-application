@@ -17,6 +17,8 @@ import { useRouter } from "expo-router";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { registerUser } from "@/services/auth";
 import { pickImage } from "@/services/imagePicker";
+import Toast from "react-native-toast-message";
+
 
 
 
@@ -44,23 +46,42 @@ export default function RegisterScreen() {
 
   const handleRegister = async () => {
     if (!name || !email || !password || !confirmPassword) {
-      Alert.alert("Error", "Please fill in all fields");
+      Toast.show({
+        type: "error",
+        text1: "registration failed",
+        text2: "Please fill all the details",
+      });
+
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+      Toast.show({
+        type: "error",
+        text1: "password failed",
+        text2: "Please check your passwords match",
+      });
+
       return;
     }
 
     try {
       await registerUser(name, email, password , profileImage || "");
       console.log("Base64 length:", profileImage?.length);
-      Alert.alert("Account created..!")
+      Toast.show({
+        type: "success",
+        text1: "Account Created successful 🎉",
+        text2: "Please login to continue",
+      });
+
       router.replace("/login")
     } catch (e) {
       console.error(e)
-      Alert.alert("Register fail..!")
+      Toast.show({
+        type: "error",
+        text1: "Register failed",
+        text2: "Please try again",
+      });
     }
   };
 
@@ -217,38 +238,12 @@ export default function RegisterScreen() {
               <View className="flex-1 h-[1px] bg-slate-100" />
             </View>
 
-            <TouchableOpacity
-              // onPress={}
-              activeOpacity={0.85}
-              className={`rounded-2xl py-4 border flex-row items-center justify-center mb-6 ${
-                isDark
-                  ? "bg-slate-700 border-slate-600"
-                  : "bg-slate-50 border-slate-200"
-              }`}
-            >
-              <AntDesign
-                name="google"
-                size={20}
-                color="#00bba7"
-                style={{ marginRight: 12 }}
-              />
-
-              <Text
-                className={`font-bold text-base ${
-                  isDark ? "text-white" : "text-slate-900"
-                }`}
-              >
-                Continue with Google
-              </Text>
-            </TouchableOpacity>
-
             <View className="flex-row justify-center pb-10">
               <Text className="text-slate-500 text-base">Already have an account? </Text>
               <TouchableOpacity onPress={() => router.push("/login")}>
                 <Text className="text-teal-600 font-black text-base">Login Account</Text>
               </TouchableOpacity>
             </View>
-
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
