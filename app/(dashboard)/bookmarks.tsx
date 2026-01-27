@@ -118,7 +118,7 @@ export default function BookmarksScreen() {
   }
 
   return (
-    <SafeAreaView className={`flex-1 ${isDark ? "bg-slate-950" : "bg-slate-50"}`}>
+    <SafeAreaView className={`flex-1 ${isDark ? "bg-slate-950" : "bg-white"}`}>
       <View className={`px-6 pt-4 pb-4 flex-row justify-between items-center ${isDark ? "bg-slate-950" : "bg-white"}`}>
         <View>
           <Text className="text-teal-500 text-[10px] font-black tracking-[2px]">BOOKMARKS</Text>
@@ -168,10 +168,12 @@ export default function BookmarksScreen() {
               )}
               <View className="p-4">
                 <Text className="text-xs text-teal-500 font-bold mb-1 uppercase tracking-wider">{post.category}</Text>
-                <Text className={`${isDark ? "text-white" : "text-slate-900"} text-lg font-bold mb-2`}>{post.author}</Text>
+                <Text className={`${isDark ? "text-white" : "text-slate-900"} text-md font-bold mb-2`}>{post.author}</Text>
+
+                <Text className={`${isDark ? "text-white" : "text-slate-900"} text-2xl font-serif font-bold mb-2`}>{post.title}</Text>
                 
                 <Text 
-                  className={`${isDark ? "text-slate-400" : "text-slate-800"} text-[14px] leading-5`}
+                  className={`${isDark ? "text-slate-400" : "text-slate-800"} text-[14px] leading-5  font-serif`}
                   numberOfLines={isExpanded[post.id] ? undefined : 10}
                 >
                   {post.content}
@@ -189,8 +191,8 @@ export default function BookmarksScreen() {
         <View className="h-24" />
       </ScrollView>
 
-      <View className="absolute bottom-6 left-4 right-4">
-        <View className={`${isDark ? "bg-slate-900/95" : "bg-white/95"} flex-row items-center justify-around py-3 rounded-3xl shadow-xl border ${isDark ? "border-slate-800" : "border-slate-100"}`}>
+      <View className="absolute bottom-4 left-4 right-4">
+        <View className={`${isDark ? "bg-slate-900" : "bg-slate-200"} flex-row items-center justify-around py-4 rounded-b-3xl shadow-xl border ${isDark ? "border-slate-900" : "border-slate-100"}`}>
           <TouchableOpacity className="items-center px-4" onPress={() => router.push("/home")}>
             <Ionicons name="home-outline" size={24} color="#64748b" />
             <Text className="text-[10px] text-slate-500 mt-1">Home</Text>
@@ -203,7 +205,7 @@ export default function BookmarksScreen() {
 
           <TouchableOpacity 
             onPress={() => router.push("/create")}
-            className="w-14 h-14 bg-teal-600 rounded-full items-center justify-center -mt-10 shadow-lg dark:border-slate-950"
+            className="w-14 h-14 bg-teal-600 rounded-full items-center justify-center -mt-12 shadow-lg dark:border-slate-950"
           >
             <Ionicons name="add" size={32} color="white" />
           </TouchableOpacity>
