@@ -236,13 +236,13 @@ export default function ProfileScreen() {
               >
                 <Ionicons
                   name={isDark ? "sunny" : "moon"}
-                  size={20}
+                  size={26}
                   color={isDark ? "#fbbf24" : "#64748b"}
                 />
               </TouchableOpacity>
 
               <TouchableOpacity
-                className="w-11 h-11 rounded-2xl border-2 border-teal-500/20 overflow-hidden"
+                className="w-16 h-16 rounded-full border-2 border-teal-500/30 overflow-hidden"
                 onPress={() => router.push("/profile")}
               >
                 {profileImage ? (

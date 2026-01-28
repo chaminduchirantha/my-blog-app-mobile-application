@@ -51,8 +51,12 @@ export default function BookmarksScreen() {
 
         if (userSnap.exists()) {
           const data = userSnap.data();
-          if (data.photoURL) {
-            setProfileImage(data.photoURL);
+          if (data.profileImageBase64) {
+            setProfileImage(
+              data.profileImageBase64.startsWith("data:image")
+                ? data.profileImageBase64
+                : `data:image/jpeg;base64,${data.profileImageBase64}`
+            );
           } else if (user.photoURL) {
             setProfileImage(user.photoURL);
           } else {
@@ -132,11 +136,11 @@ export default function BookmarksScreen() {
             onPress={() => setTheme(isDark ? "light" : "dark")}
             className={`p-2.5 rounded-2xl ${isDark ? "bg-slate-900 border border-slate-800" : "bg-slate-100 border border-slate-200"}`}
           >
-            <Ionicons name={isDark ? "sunny" : "moon"} size={20} color={isDark ? "#fbbf24" : "#64748b"} />
+            <Ionicons name={isDark ? "sunny" : "moon"} size={26} color={isDark ? "#fbbf24" : "#64748b"} />
           </TouchableOpacity>
           
           <TouchableOpacity 
-            className="w-11 h-11 rounded-2xl border-2 border-teal-500/20 overflow-hidden"
+            className="w-16 h-16 rounded-full border-2 border-teal-500/30 overflow-hidden"
             onPress={() => router.push("/profile")}
           >
             {profileImage ? (
