@@ -256,10 +256,10 @@ export default function TopicsPage() {
 
           <TouchableOpacity
             className="items-center px-4"
-            onPress={() => router.push("/bookmarks")}
+            onPress={() => router.push("/topics")}
           >
-            <Ionicons name="bookmark-outline" size={24} color="#64748b" />
-            <Text className="text-[10px] text-slate-500 mt-1">Saved</Text>
+            <Ionicons name="search" size={24} color="#64748b" />
+            <Text className="text-[10px] text-slate-500 mt-1">Explore</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -271,11 +271,11 @@ export default function TopicsPage() {
 
           <TouchableOpacity
             className="items-center px-4"
-            onPress={() => router.push("/topics")}
+            onPress={() => router.push("/bookmarks")}
           >
-            <Ionicons name="search" size={24} color="#0d9488" />
+            <Ionicons name="bookmark-outline" size={24} color="#0d9488" />
             <Text className="text-[10px] text-teal-600 font-bold mt-1">
-              Explore
+              saved
             </Text>
           </TouchableOpacity>
 

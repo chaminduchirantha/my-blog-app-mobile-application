@@ -35,6 +35,8 @@ export default function HomeScreen() {
   const user = auth.currentUser;
   const systemTheme = useColorScheme();
   const [bookmarks, setBookmarks] = useState<{[key: string]: { saved: boolean , count: number };}>({});
+  const [searchText, setSearchText] = useState("");
+
 
   
   const [theme, setTheme] = useState(systemTheme || "light");
@@ -244,6 +246,18 @@ export default function HomeScreen() {
     }
   };
 
+  const filteredPosts = posts.filter((post) => {
+    const text = searchText.toLowerCase();
+
+    return (
+      post.title?.toLowerCase().includes(text) ||
+      post.content?.toLowerCase().includes(text) ||
+      post.category?.toLowerCase().includes(text) ||
+      post.author?.toLowerCase().includes(text)
+    );
+  });
+
+
 
 
   return (
@@ -281,105 +295,27 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <View className="px-4">
-          <View
-            className={`flex-row items-center justify-between px-0 py-4 rounded-2xl
-            ${isDark ? "bg-slate-900" : "bg-slate-200/50"}`}
-          >
-            <TouchableOpacity
-              className="items-center flex-1"
-              onPress={() => router.push("/")}
-            >
-              <Ionicons name="home" size={24} color="#10b981" />
-              <Text className="text-xs text-teal-500">Home</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              className="items-center flex-1"
-              onPress={() => router.push("/bookmarks")}
-            >
-              <Ionicons name="bookmark-outline" size={24} color="#64748b" />
-              <Text className="text-xs text-slate-500">Saved</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => router.push("/create")}
-              className="w-14 h-14 bg-teal-600 rounded-full items-center justify-center -mt-8 shadow-lg"
-            >
-              <Ionicons name="add" size={30} color="white" />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              className="items-center flex-1"
-              onPress={() => router.push("/topics")}
-            >
-              <Ionicons name="search-outline" size={24} color="#64748b" />
-              <Text className="text-xs text-slate-500">Explore</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              className="items-center flex-1"
-              onPress={() => router.push("/profile")}
-            >
-              <Ionicons name="person-outline" size={24} color="#64748b" />
-              <Text className="text-xs text-slate-500">Profile</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
-        <View className="px-6 py-5">
+       <View className="px-6 py-5 fixed">
           <View className={`flex-row items-center ${isDark ? "bg-slate-800" : "bg-white"} px-4 py-3 rounded-2xl border border-slate-200 shadow-sm shadow-slate-200`}>
             <Feather name="search" size={20} color="#94a3b8" />
             <TextInput
               placeholder="Search creative posts..."
+              value={searchText}
+              onChangeText={setSearchText}
               className="flex-1 ml-3 text-slate-900"
               placeholderTextColor="#94a3b8"
             />
           </View>
         </View>
 
-        <View className="px-6 mb-6">
-          <Text className={`${isDark ? "text-slate-100" : "text-slate-900"} text-lg font-bold mb-4`}>
-            Categories
-          </Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="flex-row"
-          >
-            {["All", "Design", "Coding", "Writing", "Tech"].map(
-              (cat, index) => (
-                <TouchableOpacity
-                  key={index}
-                  className={`mr-3 px-5 py-2.5 rounded-xl ${
-                    index === 0
-                      ? "bg-teal-600"
-                      : isDark
-                      ? "bg-slate-800 border border-slate-700"
-                      : "bg-white border border-slate-200"
-                    }
-                  `}>
-                  <Text
-                    className={`font-bold ${
-                      index === 0
-                        ? "text-white"
-                        : isDark
-                        ? "text-slate-300"
-                        : "text-slate-500"
-                      }
-                    `}>
-                    {cat}
-                  </Text>
-                </TouchableOpacity>
-              ),
-            )}
-          </ScrollView>
-        </View>
+      <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+       
 
         <View className="px-6">
-          {posts.map((post) => (
+          {filteredPosts.map((post) => (
             <TouchableOpacity
               key={post.id}
               activeOpacity={0.9}
@@ -435,8 +371,8 @@ export default function HomeScreen() {
                   </Text>
                 </View>
 
-                <View className="px-3 pb-3">
-                  <Text className={`${isDark ? "text-slate-100" : "text-slate-900"} font-bold text-2xl font-serif  mb-1`}>
+                <View className="px-1 pb-3">
+                  <Text className={`${isDark ? "text-slate-100" : "text-slate-900"} font-bold text-2xl font-serif  mb-5`}>
                     {post.title}
                   </Text>
                   <Text
@@ -492,15 +428,84 @@ export default function HomeScreen() {
             </TouchableOpacity>
           ))}
         </View>
+
+        {filteredPosts.length === 0 && searchText.trim() !== "" && (
+          <View className="items-center justify-center mt-20">
+            <Ionicons
+              name="search-outline"
+              size={64}
+              color={isDark ? "#475569" : "#cbd5f5"}
+            />
+            <Text
+              className={`mt-4 text-lg font-semibold
+              ${isDark ? "text-slate-400" : "text-slate-500"}`}
+            >
+              Result not found
+            </Text>
+            <Text
+              className={`mt-1 text-sm
+              ${isDark ? "text-slate-500" : "text-slate-400"}`}
+            >
+              Try searching with different keywords
+            </Text>
+          </View>
+        )}
+
       </ScrollView>
 
-      <TouchableOpacity
+      <View className="px-4">
+          <View
+            className={`flex-row items-center justify-between px-0 py-4 rounded-2xl
+            ${isDark ? "bg-slate-900" : "bg-slate-200/50"}`}
+          >
+            <TouchableOpacity
+              className="items-center flex-1"
+              onPress={() => router.push("/")}
+            >
+              <Ionicons name="home" size={24} color="#009689" />
+              <Text className="text-xs text-teal-600">Home</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="items-center flex-1"
+              onPress={() => router.push("/topics")}
+            >
+              <Ionicons name="search-outline" size={24} color="#64748b" />
+              <Text className="text-xs text-slate-500">explore</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => router.push("/create")}
+              className="w-14 h-14 bg-teal-600 rounded-full items-center justify-center -mt-8 shadow-lg"
+            >
+              <Ionicons name="add" size={30} color="white" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="items-center flex-1"
+              onPress={() => router.push("/bookmarks")}
+            >
+              <Ionicons name="bookmark-outline" size={24} color="#64748b" />
+              <Text className="text-xs text-slate-500">saved</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="items-center flex-1"
+              onPress={() => router.push("/profile")}
+            >
+              <Ionicons name="person-outline" size={24} color="#64748b" />
+              <Text className="text-xs text-slate-500">Profile</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+      {/* <TouchableOpacity
         className="absolute bottom-8 right-8 w-14 h-14 bg-teal-600 rounded-full items-center justify-center shadow-xl shadow-teal-600/50"
         onPress={() => router.push("/create")}
         activeOpacity={0.7}
       >
         <Feather name="plus" size={28} color="white" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </SafeAreaView>
   );
 }
