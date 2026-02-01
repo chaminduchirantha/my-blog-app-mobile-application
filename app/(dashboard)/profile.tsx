@@ -391,76 +391,35 @@ export default function ProfileScreen() {
       </ScrollView>
 
       <View className="absolute bottom-6 left-4 right-4">
-        <View
-          className={`flex-row items-center justify-around py-3 rounded-3xl shadow-xl border ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-100"}`}
-        >
-          <TouchableOpacity
-            className="items-center px-4"
-            onPress={() => router.push("/home")}
-          >
-            <Ionicons
-              name="home-outline"
-              size={24}
-              color={isDark ? "#94a3b8" : "#64748b"}
-            />
-            <Text
-              className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}
-            >
+        <View className={`flex-row items-center justify-around py-3 rounded-3xl shadow-xl border ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-100"}`}>
+          <TouchableOpacity className="items-center px-4" onPress={() => router.push("/home")}>
+            <Ionicons name="home-outline" size={24} color={isDark ? "#94a3b8" : "#64748b"}/>
+            <Text className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
               Home
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            className="items-center px-4"
-            onPress={() => router.push("/bookmarks")}
-          >
-            <Ionicons
-              name="bookmark-outline"
-              size={24}
-              color={isDark ? "#94a3b8" : "#64748b"}
-            />
-            <Text
-              className={`text-[10px] font-bold mt-1 ${isDark ? "text-slate-400" : "text-slate-600"}`}
-            >
-              Saved
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => router.push("/create")}
-            className={`w-14 h-14 bg-teal-600 rounded-full items-center justify-center -mt-10 shadow-lg ${isDark ? "border border-slate-950" : ""}`}
-          >
-            <Ionicons name="add" size={32} color="white" />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className="items-center px-4"
-            onPress={() => router.push("/topics")}
-          >
-            <Ionicons
-              name="search-outline"
-              size={24}
-              color={isDark ? "#94a3b8" : "#64748b"}
-            />
-            <Text
-              className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}
-            >
+         <TouchableOpacity className="items-center px-4" onPress={() => router.push("/topics")}>
+            <Ionicons name="search-outline" size={24} color={isDark ? "#94a3b8" : "#64748b"}/>
+            <Text className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
               Explore
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            className="items-center px-4"
-            onPress={() => router.push("/profile")}
-          >
-            <Ionicons
-              name="person-outline"
-              size={24}
-              color={isDark ? "#94a3b8" : "#64748b"}
-            />
-            <Text
-              className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}
-            >
+          <TouchableOpacity onPress={() => router.push("/create")} className={`w-14 h-14 bg-teal-600 rounded-full items-center justify-center -mt-10 shadow-lg ${isDark ? "border border-slate-950" : ""}`}>
+            <Ionicons name="add" size={32} color="white" />
+          </TouchableOpacity>
+
+          <TouchableOpacity className="items-center px-4"onPress={() => router.push("/bookmarks")}>
+            <Ionicons name="bookmark-outline"size={24} color={isDark ? "#94a3b8" : "#64748b"}/>
+            <Text className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+              Saved
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity className="items-center px-4" onPress={() => router.push("/profile")}>
+            <Ionicons name="person" size={24} color={isDark ? "#94a3b8" : "#0d9488"}/>
+            <Text className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
               Profile
             </Text>
           </TouchableOpacity>

@@ -196,28 +196,29 @@ export default function BookmarksScreen() {
       </ScrollView>
 
       <View className="absolute bottom-4 left-4 right-4">
-        <View className={`${isDark ? "bg-slate-900" : "bg-slate-200"} flex-row items-center justify-around py-4 rounded-b-3xl shadow-xl border ${isDark ? "border-slate-900" : "border-slate-100"}`}>
+        <View className={`${isDark ? "bg-slate-900" : "bg-slate-200"} flex-row items-center justify-around py-3 rounded-2xl shadow-xl border ${isDark ? "border-slate-900" : "border-slate-100"}`}>
           <TouchableOpacity className="items-center px-4" onPress={() => router.push("/home")}>
             <Ionicons name="home-outline" size={24} color="#64748b" />
             <Text className="text-[10px] text-slate-500 mt-1">Home</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity className="items-center px-4" onPress={() => router.push("/bookmarks")}>
-            <Ionicons name="bookmark" size={24} color="#0d9488" />
-            <Text className="text-[10px] text-teal-600 font-bold mt-1">Saved</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            onPress={() => router.push("/create")}
-            className="w-14 h-14 bg-teal-600 rounded-full items-center justify-center -mt-12 shadow-lg dark:border-slate-950"
-          >
-            <Ionicons name="add" size={32} color="white" />
           </TouchableOpacity>
 
           <TouchableOpacity className="items-center px-4" onPress={() => router.push("/topics")}>
             <Ionicons name="search-outline" size={24} color="#64748b" />
             <Text className="text-[10px] text-slate-500 mt-1">Explore</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={() => router.push("/create")}
+            className="w-14 h-14 bg-teal-600 rounded-full items-center justify-center -mt-8 shadow-lg dark:border-slate-950"
+          >
+            <Ionicons name="add" size={32} color="white" />
+          </TouchableOpacity>
+
+          <TouchableOpacity className="items-center px-4" onPress={() => router.push("/bookmarks")}>
+            <Ionicons name="bookmark" size={24} color="#0d9488" />
+            <Text className="text-[10px] text-teal-600 font-bold mt-1">Saved</Text>
+          </TouchableOpacity>
+          
 
           <TouchableOpacity className="items-center px-4" onPress={() => router.push("/profile")}>
             <Ionicons name="person-outline" size={24} color="#64748b" />

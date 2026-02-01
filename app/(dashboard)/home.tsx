@@ -319,7 +319,7 @@ export default function HomeScreen() {
             <TouchableOpacity
               key={post.id}
               activeOpacity={0.9}
-              className={`${isDark ? "bg-slate-800" : "bg-white"} mb-5 overflow-hidden rounded-2xl shadow-sm shadow-slate-200`}
+              className={`${isDark ? "bg-slate-800" : "bg-zinc-300"} mb-5 overflow-hidden rounded-2xl shadow-sm shadow-slate-200`}
             >
               <View className="flex-row items-center p-3">
                 <View className={`w-10 h-10 ${isDark ? "bg-slate-700" : "bg-slate-200"} rounded-full items-center justify-center`}>
@@ -376,8 +376,8 @@ export default function HomeScreen() {
                     {post.title}
                   </Text>
                   <Text
-                    className={`${isDark ? "text-slate-100" : "text-slate-800"} text-[14px] font-serif leading-5`}
-                    numberOfLines={isExpanded ? undefined : 14}
+                    className={`${isDark ? "text-slate-100" : "text-slate-800"} text-[14px] leading-6 font-serif`}
+                    numberOfLines={isExpanded ? undefined : 5}
                   >
                     {post.content}
                   </Text>
