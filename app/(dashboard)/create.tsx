@@ -23,6 +23,7 @@ import {
   setDoc,
   Timestamp
 } from "firebase/firestore";
+import Toast from "react-native-toast-message";
 
 export default function CreatePostScreen() {
   const [image, setImage] = useState<string | null>(null);
@@ -124,7 +125,11 @@ export default function CreatePostScreen() {
 
   const handlePublish = async () => {
     if (!title || !author || !content) {
-      Alert.alert("Please fill all fields");
+       Toast.show({
+        type: "error",
+        text1: "Missing details",
+        text2: "Please enter title, author and content  to publish",
+      });
       return;
     }
 
@@ -135,7 +140,11 @@ export default function CreatePostScreen() {
 
     try {
       await addPost(title, author, selectedCategory, content, imageBase64);
-      Alert.alert("Post created!", `Title: ${title}`);
+      Toast.show({
+        type: "success",
+        text1: "Post published successful🎉",
+        text2: "Your post is now live!",
+      });
       
       setTitle("");
       setAuthor("");
@@ -144,7 +153,11 @@ export default function CreatePostScreen() {
       setSelectedCategory("Tech");
     } catch (err: any) {
       console.log(err);
-      Alert.alert("Error", err.message || "Something went wrong");
+      Toast.show({
+        type: "error",
+        text1: "Error publishing post",
+        text2: err.message || "Something went wrong",
+      });
     }
   };
   

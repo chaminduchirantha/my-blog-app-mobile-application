@@ -26,6 +26,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 
 export default function ProfileScreen() {
   const user = auth.currentUser;
@@ -188,8 +189,10 @@ export default function ProfileScreen() {
           : p
       )
     );
-    alert("Post updated successfully!");
-
+    Toast.show({
+      type: "success",
+      text1: "Post updated successfully!",
+    });
     setEditModalVisible(false);
   };
 
