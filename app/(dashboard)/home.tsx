@@ -36,6 +36,8 @@ export default function HomeScreen() {
   const systemTheme = useColorScheme();
   const [bookmarks, setBookmarks] = useState<{[key: string]: { saved: boolean , count: number };}>({});
   const [searchText, setSearchText] = useState("");
+  const [authorProfiles, setAuthorProfiles] = useState<{ [key: string]: { image: string | null };}>({});
+
 
 
   
@@ -258,6 +260,36 @@ export default function HomeScreen() {
   });
 
 
+  const fetchAuthorProfiles = async (postsData: any[]) => {
+    const profiles: any = {};
+
+    for (const post of postsData) {
+      if (!profiles[post.authorId]) {
+        const userRef = doc(db, "users", post.authorId);
+        const snap = await getDoc(userRef);
+
+        if (snap.exists()) {
+          const data = snap.data();
+          let image = null;
+
+          if (data.profileImageBase64) {
+            image = data.profileImageBase64.startsWith("data:image")
+              ? data.profileImageBase64
+              : `data:image/jpeg;base64,${data.profileImageBase64}`;
+          } else if (data.photoURL) {
+            image = data.photoURL;
+          }
+
+          profiles[post.authorId] = { image };
+        }
+      }
+    }
+
+    setAuthorProfiles(profiles);
+  };
+
+
+
 
 
   return (
@@ -323,9 +355,22 @@ export default function HomeScreen() {
             >
               <View className="flex-row items-center p-3">
                 <View className={`w-10 h-10 ${isDark ? "bg-slate-700" : "bg-slate-200"} rounded-full items-center justify-center`}>
-                  <Text className={`${isDark ? "text-slate-100" : "text-slate-600"} font-bold`}>
-                    {post.author?.charAt(0)}
-                  </Text>
+                  {post.authorImage ? (
+                    <Image
+                      source={{
+                        uri: post.authorImage.startsWith("data:image")
+                          ? post.authorImage
+                          : `data:image/jpeg;base64,${post.authorImage}`,
+                      }}
+                      className="w-full h-full"
+                    />
+                  ) : (
+                    <View className="bg-teal-500 w-full h-full rounded-full items-center justify-center">
+                      <Text className="text-white font-bold">
+                        {post.author.charAt(0)}
+                      </Text>
+                    </View>
+                  )}
                 </View>
                 <View className="ml-3 flex-1">
                   <Text className={`${isDark ? "text-slate-100" : "text-slate-900"} font-bold text-[15px]`}>

@@ -47,6 +47,7 @@ export default function ProfileScreen() {
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
   const [editCategory, setEditCategory] = useState("");
+  const [isExpanded, setIsExpanded] = useState({});
 
   interface Post {
     id: string;
@@ -65,10 +66,12 @@ export default function ProfileScreen() {
       if (docSnap.exists()) {
         const data = docSnap.data();
         const displayImage = data.profileImageBase64
-          ? `data:image/jpeg;base64,${data.profileImageBase64}`
+          ? data.profileImageBase64.startsWith("data:image")
+            ? data.profileImageBase64
+            : `data:image/jpeg;base64,${data.profileImageBase64}`
           : data.photoURL || null;
         setProfileImage(displayImage);
-        setUserName(data.name || "User");
+        setUserName(data.name || user.displayName || "User");
       }
 
       try {
@@ -179,15 +182,19 @@ export default function ProfileScreen() {
       // "author",/
       editCategory,
       editContent,
-      
     );
 
     setMyPosts((prev) =>
       prev.map((p) =>
         p.id === selectedPost.id
-          ? { ...p, title: editTitle, content: editContent, category: editCategory }
-          : p
-      )
+          ? {
+              ...p,
+              title: editTitle,
+              content: editContent,
+              category: editCategory,
+            }
+          : p,
+      ),
     );
     Toast.show({
       type: "success",
@@ -196,23 +203,23 @@ export default function ProfileScreen() {
     setEditModalVisible(false);
   };
 
-
   const handleDeletePost = (postId: string) => {
-    Alert.alert("Delete Post","Are you sure?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            await deletePost(postId);
-            setMyPosts((prev) => prev.filter((p) => p.id !== postId));
-            setPostCount((c) => c - 1);
-          },
+    Alert.alert("Delete Post", "Are you sure?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          await deletePost(postId);
+          setMyPosts((prev) => prev.filter((p) => p.id !== postId));
+          setPostCount((c) => c - 1);
         },
-      ]
-    );
+      },
+    ]);
   };
+
+
+
 
   return (
     <SafeAreaView className={`flex-1 ${isDark ? "bg-slate-900" : "bg-white"}`}>
@@ -245,17 +252,17 @@ export default function ProfileScreen() {
               </TouchableOpacity>
 
               <TouchableOpacity
-                className="w-16 h-16 rounded-full border-2 border-teal-500/30 overflow-hidden"
+                className="w-16 h-16 rounded-full border-2 border-teal-500/30 overflow-hidden bg-teal-500 items-center justify-center"
                 onPress={() => router.push("/profile")}
               >
                 {profileImage ? (
                   <Image
                     source={{ uri: profileImage }}
-                    className="w-full h-full"
+                    className="w-full h-full rounded-full"
                   />
                 ) : (
-                  <View className="bg-teal-500 w-full h-full items-center justify-center">
-                    <Text className="text-white font-bold">
+                  <View className="bg-teal-500 w-full h-full items-center justify-center rounded-full">
+                    <Text className="text-white font-bold text-lg">
                       {userName?.charAt(0) || "U"}
                     </Text>
                   </View>
@@ -266,12 +273,18 @@ export default function ProfileScreen() {
         </View>
 
         <View className="items-center mt-8">
-          {profileImage && (
-            <Image
-              source={{ uri: profileImage }}
-              className="w-32 h-32 rounded-full"
-            />
-          )}
+          <View className="w-32 h-32 rounded-full border-2 border-teal-500 overflow-hidden bg-teal-500 items-center justify-center">
+            {profileImage ? (
+              <Image
+                source={{ uri: profileImage }}
+                className="w-full h-full rounded-full"
+              />
+            ) : (
+              <Text className="text-white font-bold text-5xl">
+                {user?.displayName?.charAt(0)?.toUpperCase() || "U"}
+              </Text>
+            )}
+          </View>
           <Text
             className={`text-xl font-bold mt-4 ${isDark ? "text-white" : "text-black"}`}
           >
@@ -335,7 +348,7 @@ export default function ProfileScreen() {
                         ? post.imageBase64
                         : `data:image/jpeg;base64,${post.imageBase64}`,
                     }}
-                    className="w-full h-20 rounded-2xl"
+                    className="w-full h-56 rounded-2xl"
                     resizeMode="cover"
                   />
                 ) : (
@@ -350,28 +363,42 @@ export default function ProfileScreen() {
                   </View>
                 )}
                 <View className="absolute top-2 right-2 flex-row gap-3 z-10">
-
                   {/* UPDATE */}
                   <TouchableOpacity onPress={() => openEditPostModal(post)}>
                     <Ionicons name="create" size={25} color="#22c55e" />
                   </TouchableOpacity>
 
                   {/* DELETE */}
-                  <TouchableOpacity onPress={() => alert(handleDeletePost(post.id))}>
+                  <TouchableOpacity
+                    onPress={() => alert(handleDeletePost(post.id))}
+                  >
                     <Ionicons name="trash" size={24} color="#ef4444" />
                   </TouchableOpacity>
-
                 </View>
                 <Text
                   className={`font-semibold text-base ${isDark ? "text-slate-100" : "text-slate-800"}`}
                 >
                   {post.title}
                 </Text>
-                <Text
-                  className={`font-semibold text-base ${isDark ? "text-slate-100" : "text-slate-800"}`}
-                >
-                  {post.content}
-                </Text>
+                <ScrollView>
+                  <Text
+                    className={`${isDark ? "text-slate-100" : "text-slate-800"} text-[14px] leading-6 font-serif`}
+                    numberOfLines={isExpanded ? undefined : 5}
+                  >
+                    {post.content}
+                  </Text>
+                </ScrollView>
+                
+                {post.content?.length > 150 && (
+                  <TouchableOpacity
+                    onPress={() => setIsExpanded(!isExpanded)}
+                    className="mt-1"
+                  >
+                    <Text className="text-slate-500 font-bold text-[14px]">
+                      {isExpanded ? "Show Less" : "See More..."}
+                    </Text>
+                  </TouchableOpacity>
+                )}
                 <Text
                   className={`text-xs mt-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}
                 >
@@ -394,35 +421,76 @@ export default function ProfileScreen() {
       </ScrollView>
 
       <View className="absolute bottom-6 left-4 right-4">
-        <View className={`flex-row items-center justify-around py-3 rounded-3xl shadow-xl border ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-100"}`}>
-          <TouchableOpacity className="items-center px-4" onPress={() => router.push("/home")}>
-            <Ionicons name="home-outline" size={24} color={isDark ? "#94a3b8" : "#64748b"}/>
-            <Text className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+        <View
+          className={`flex-row items-center justify-around py-3 rounded-3xl shadow-xl border ${isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-100"}`}
+        >
+          <TouchableOpacity
+            className="items-center px-4"
+            onPress={() => router.push("/home")}
+          >
+            <Ionicons
+              name="home-outline"
+              size={24}
+              color={isDark ? "#94a3b8" : "#64748b"}
+            />
+            <Text
+              className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}
+            >
               Home
             </Text>
           </TouchableOpacity>
 
-         <TouchableOpacity className="items-center px-4" onPress={() => router.push("/topics")}>
-            <Ionicons name="search-outline" size={24} color={isDark ? "#94a3b8" : "#64748b"}/>
-            <Text className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+          <TouchableOpacity
+            className="items-center px-4"
+            onPress={() => router.push("/topics")}
+          >
+            <Ionicons
+              name="search-outline"
+              size={24}
+              color={isDark ? "#94a3b8" : "#64748b"}
+            />
+            <Text
+              className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}
+            >
               Explore
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => router.push("/create")} className={`w-14 h-14 bg-teal-600 rounded-full items-center justify-center -mt-10 shadow-lg ${isDark ? "border border-slate-950" : ""}`}>
+          <TouchableOpacity
+            onPress={() => router.push("/create")}
+            className={`w-14 h-14 bg-teal-600 rounded-full items-center justify-center -mt-10 shadow-lg ${isDark ? "border border-slate-950" : ""}`}
+          >
             <Ionicons name="add" size={32} color="white" />
           </TouchableOpacity>
 
-          <TouchableOpacity className="items-center px-4"onPress={() => router.push("/bookmarks")}>
-            <Ionicons name="bookmark-outline"size={24} color={isDark ? "#94a3b8" : "#64748b"}/>
-            <Text className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+          <TouchableOpacity
+            className="items-center px-4"
+            onPress={() => router.push("/bookmarks")}
+          >
+            <Ionicons
+              name="bookmark-outline"
+              size={24}
+              color={isDark ? "#94a3b8" : "#64748b"}
+            />
+            <Text
+              className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-600"}`}
+            >
               Saved
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="items-center px-4" onPress={() => router.push("/profile")}>
-            <Ionicons name="person" size={24} color={isDark ? "#94a3b8" : "#0d9488"}/>
-            <Text className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+          <TouchableOpacity
+            className="items-center px-4"
+            onPress={() => router.push("/profile")}
+          >
+            <Ionicons
+              name="person"
+              size={24}
+              color={isDark ? "#94a3b8" : "#0d9488"}
+            />
+            <Text
+              className={`text-[10px] mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}
+            >
               Profile
             </Text>
           </TouchableOpacity>
@@ -521,7 +589,6 @@ export default function ProfileScreen() {
       <Modal visible={editModalVisible} transparent animationType="slide">
         <View className="flex-1 justify-center bg-black/60 px-6">
           <View className="bg-white rounded-2xl p-5">
-
             <Text className="text-lg font-bold mb-4">Update Post</Text>
 
             <TextInput
@@ -558,11 +625,9 @@ export default function ProfileScreen() {
                 <Text className="text-white font-semibold">Update</Text>
               </TouchableOpacity>
             </View>
-
           </View>
         </View>
       </Modal>
-
     </SafeAreaView>
   );
 }
