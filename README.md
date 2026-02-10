@@ -48,8 +48,11 @@ A **mobile blogging application** that allows users to create, view, and manage 
 1. **Download the apk file**
 
    https://expo.dev/accounts/chaminduchirantha/projects/my-blog-app/builds/404e3e7e-1345-48c2-a6ff-cef15f9c4f06
+   
+   <img width="290" height="290" alt="image" src="https://github.com/user-attachments/assets/d41f2c1a-0c34-4182-9146-948f77a571da" />
 
-2. **Clone the repository**  
+
+3. **Clone the repository**  
 
    https://github.com/your-username/blogging-app.git](https://github.com/chaminduchirantha/my-blog-app-mobile-application)
 
