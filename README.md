@@ -1,50 +1,58 @@
-# Welcome to your Expo app 👋
+# Blogging Mobile Application
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A **mobile blogging application** that allows users to create, view, and manage blogs, interact with posts, and personalize their profiles. Built with **React Native** and **Firebase**.
 
-## Get started
+---
 
-1. Install dependencies
+## Features
 
-   ```bash
-   npm install
-   ```
+### User Features
+- **User Registration & Login** – Secure authentication with email/password.  
+- **Edit Profile** – Update personal information and profile picture.  
+- **Create & Edit Blogs** – Users can publish new blogs and edit their own posts.  
+- **View Blogs** – Browse all published blogs.  
+- **Like Posts** – Like other users’ posts.  
+- **Save / Bookmark Posts** – Save blogs to view later.  
+- **Search Blogs** – Search blogs by title or keywords.  
 
-2. Start the app
+### Additional Features
+- **Real-time Updates** – Changes in posts, likes, and bookmarks are updated instantly.  
+- **Responsive UI** – Mobile-friendly interface.  
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## Screenshots
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+*(Add screenshots of your app here)*  
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- Home / Blog Feed  
+- Blog Detail Page  
+- Profile Page  
+- Saved / Bookmarked Posts  
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## Tech Stack
 
-```bash
-npm run reset-project
-```
+- **Frontend:** React Native  
+- **Backend & Database:** Firebase Firestore & Firebase Authentication  
+- **State Management:** React Hooks / Context API  
+- **Libraries / Tools:**  
+  - Expo  
+  - React Navigation 
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## Installation & Setup
 
-To learn more about developing your project with Expo, look at the following resources:
+1. **Download the apk file**
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+   https://expo.dev/accounts/chaminduchirantha/projects/my-blog-app/builds/404e3e7e-1345-48c2-a6ff-cef15f9c4f06
 
-## Join the community
+2. **Clone the repository**  
 
-Join our community of developers creating universal apps.
+   https://github.com/your-username/blogging-app.git](https://github.com/chaminduchirantha/my-blog-app-mobile-application)
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+
+
